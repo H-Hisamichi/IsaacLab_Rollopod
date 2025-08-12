@@ -10,6 +10,7 @@ from isaaclab_tasks.manager_based.locomotion.velocity.velocity_env_cfg import Lo
 from isaaclab.managers import RewardTermCfg as RewTerm
 from isaaclab.managers import ObservationTermCfg as ObsTerm
 from isaaclab.managers import SceneEntityCfg
+from isaaclab.managers import TraveledDistanceRecorder
 import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 
@@ -127,13 +128,13 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.events.reset_robot_joints = None
         self.events.push_robot.params = {"velocity_range": {"yaw": (-0.5, 0.5)}}
 
-        self.rewards.dof_torques_l2.weight = -1.2e-5
+        self.rewards.dof_torques_l2.weight = -2.0e-5
         self.rewards.dof_acc_l2.weight = -4.0e-7
         self.rewards.action_rate_l2.weight = -0.005
 
         self.terminations.base_contact.params = {"sensor_cfg": SceneEntityCfg("contact_forces", body_names="MainBody"), "threshold": 1.0}
 
-        #self.curriculum.terrain_levels.func = mdp.terrain_levels_travel_dist
+        self.curriculum.terrain_levels.func = TraveledDistanceRecorder
 
         
 
