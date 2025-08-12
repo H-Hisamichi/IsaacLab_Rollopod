@@ -18,6 +18,7 @@ from isaaclab.envs import mdp
 from isaaclab.managers import SceneEntityCfg
 from isaaclab.sensors import ContactSensor
 from isaaclab.utils.math import quat_apply_inverse, yaw_quat
+from isaaclab.assets import Articulation, RigidObject
 
 if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedRLEnv
@@ -114,3 +115,82 @@ def stand_still_joint_deviation_l1(
     command = env.command_manager.get_command(command_name)
     # Penalize motion when command is nearly zero.
     return mdp.joint_deviation_l1(env, asset_cfg) * (torch.norm(command[:, :2], dim=1) < command_threshold)
+
+def steer_ang_vel_exp_2d(
+    env: ManagerBasedRLEnv, std: float, command_name: str, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
+    """Reward tracking of linear velocity commands (xy axes) using exponential kernel."""
+    # extract the used quantities (to enable type-hinting)
+    asset: RigidObject = env.scene[asset_cfg.name]
+    projected_gravity_b = asset.data.projected_gravity_b
+    root_com_ang_vel_b = asset.data.root_com_ang_vel_b
+    xy_axis = torch.zeros_like(projected_gravity_b)
+    xy_axis[:, :2] = projected_gravity_b[:, :2]
+    norm = torch.norm(xy_axis, dim=1, keepdim=True)
+    projected_vel = torch.zeros(root_com_ang_vel_b.shape[0], device=root_com_ang_vel_b.device)
+    valid_mask = norm.squeeze() > 1e-8
+    unit_axis = torch.zeros_like(xy_axis)
+    unit_axis[valid_mask] = xy_axis[valid_mask] / norm[valid_mask]
+    projected_vel[valid_mask] = torch.sum(root_com_ang_vel_b[valid_mask] * unit_axis[valid_mask], dim=1)
+    # compute the error
+    yaw_vel_error = torch.square(env.command_manager.get_command(command_name)[:, 1] - projected_vel)
+    return torch.exp(-yaw_vel_error / std**2)
+
+def track_com_ang_vel_z_exp(
+    env: ManagerBasedRLEnv, std: float, command_name: str, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
+    """Reward tracking of angular velocity commands (yaw) using exponential kernel."""
+    # extract the used quantities (to enable type-hinting)
+    asset: RigidObject = env.scene[asset_cfg.name]
+    # compute the error
+    ang_vel_error = torch.square(env.command_manager.get_command(command_name)[:, 0] - asset.data.root_com_ang_vel_b[:, 2])
+    return torch.exp(-ang_vel_error / std**2)
+
+def lin_vel_w_z_l2(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
+    """Penalize z-axis world frame linear velocity using L2 squared kernel."""
+    # extract the used quantities (to enable type-hinting)
+    asset: RigidObject = env.scene[asset_cfg.name]
+    return torch.square(asset.data.root_lin_vel_w[:, 2])
+
+def flat_z_orientation_l2(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
+    """Penalize non-flat base orientation using L2 squared kernel.
+
+    This is computed by penalizing the z-components of the projected gravity vector.
+    """
+    # extract the used quantities (to enable type-hinting)
+    asset: RigidObject = env.scene[asset_cfg.name]
+    return torch.square(asset.data.projected_gravity_b[:, 2])
+
+def shake_rolling_penalty(
+    env: ManagerBasedRLEnv,  scale: float, command_name: str, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
+    """Reward tracking of angular velocity commands (yaw) using exponential kernel."""
+    # extract the used quantities (to enable type-hinting)
+    asset: RigidObject = env.scene[asset_cfg.name]
+    _command = env.command_manager.get_command(command_name)[:, 0]
+    _root_ang_vel_b = asset.data.root_com_ang_vel_b[:, 2]
+    same_sign = torch.sign(_command) == torch.sign(_root_ang_vel_b)
+    # compute the error
+    shake_rolling_error = torch.zeros(_command.shape[0], device=_command.device)
+    return torch.where(same_sign, shake_rolling_error, torch.exp(scale * torch.abs(_root_ang_vel_b)))
+
+def rolling_slip_penalty_v2(
+    env: ManagerBasedRLEnv, scale: float, rolling_radius: float, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
+    """Rolling slip penalty using estimated speed."""
+    # extract the used quantities (to enable type-hinting)
+    asset: RigidObject = env.scene[asset_cfg.name]
+    _projected_gravity_b = asset.data.projected_gravity_b
+    _root_lin_vel_b = asset.data.root_com_lin_vel_b
+    _root_ang_vel_b = asset.data.root_com_ang_vel_b[:, 2]
+    _est_lin_vel = torch.abs(_root_ang_vel_b * rolling_radius)
+    dot_product = torch.sum(_root_lin_vel_b * _projected_gravity_b, dim=1)
+    g_norm_squared = torch.sum(_projected_gravity_b * _projected_gravity_b, dim=1)
+    mask = g_norm_squared > 0
+    projection = torch.zeros_like(_projected_gravity_b)
+    projection[mask] = (dot_product[mask] / g_norm_squared[mask]).unsqueeze(1) * _projected_gravity_b[mask]
+    vel_perp = _root_lin_vel_b - projection
+    vel_perp = torch.norm(vel_perp, dim=1)
+    # compute the error
+    _rolling_vel_error = vel_perp - _est_lin_vel
+    return torch.exp(scale * torch.abs(_rolling_vel_error))

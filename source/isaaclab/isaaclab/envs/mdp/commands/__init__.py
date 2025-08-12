@@ -12,8 +12,10 @@ from .commands_cfg import (
     UniformPose2dCommandCfg,
     UniformPoseCommandCfg,
     UniformVelocityCommandCfg,
+    CamberAngleANDRollingVelocityCommandCfg,
 )
 from .null_command import NullCommand
 from .pose_2d_command import TerrainBasedPose2dCommand, UniformPose2dCommand
 from .pose_command import UniformPoseCommand
 from .velocity_command import NormalVelocityCommand, UniformVelocityCommand
+from .rolling_command import CamberAngleANDRollingVelocityCommand
