@@ -45,5 +45,5 @@ class RollopodBFlatPPORunnerCfg(RollopodBRoughPPORunnerCfg):
         self.max_iterations = 4000
         self.save_interval = 100
         self.experiment_name = "rollopod_b_flat"
-        self.policy.actor_hidden_dims = [1024, 512, 256, 128]
-        self.policy.critic_hidden_dims = [1024, 512, 256, 128]
+        #self.policy.actor_hidden_dims = [1024, 512, 256, 128]
+        #self.policy.critic_hidden_dims = [1024, 512, 256, 128]
