@@ -55,8 +55,7 @@ class RollopodRewards(RewardsCfg):
 
 @configclass
 class RollopodCurriculums(CurriculumCfg):
-    custom_terrain_levels = CurrTerm(func=TraveledDistanceRecorder)
-    terrain_levels = CurrTerm(func=mdp.terrain_levels_travel_dist)
+    terrain_levels = CurrTerm(func=mdp.terrain_levels_vel)
 
 
 @configclass
