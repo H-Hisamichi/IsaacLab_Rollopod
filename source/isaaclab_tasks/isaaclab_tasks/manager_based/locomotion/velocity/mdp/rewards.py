@@ -97,6 +97,17 @@ def track_lin_vel_xy_yaw_frame_exp(
     )
     return torch.exp(-lin_vel_error / std**2)
 
+def track_rolling_lin_vel_exp(
+    env: ManagerBasedRLEnv, std: float, command_name: str, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
+    """Reward tracking of linear velocity commands (xy axes) in the gravity aligned robot frame using exponential kernel."""
+    # extract the used quantities (to enable type-hinting)
+    asset: Articulation = env.scene[asset_cfg.name]
+    robot_lin_vel = torch.norm(asset.data.root_com_lin_vel_b, dim=1)
+    robot_lin_vel = robot_lin_vel * torch.sign(env.command_manager.get_command(command_name)[:, 0])
+    lin_vel_error = torch.square(env.command_manager.get_command(command_name)[:, 0] - robot_lin_vel)
+    return torch.exp(-lin_vel_error / std**2)
+
 
 def track_ang_vel_z_world_exp(
     env, command_name: str, std: float, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")

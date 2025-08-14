@@ -285,11 +285,11 @@ class CamberAngleANDRollingVelocityCommandCfg(CommandTermCfg):
         """Uniform distribution ranges for the velocity commands."""
 
         #lin_vel_x: tuple[float, float] = MISSING
-        angle_velocity: tuple[float, float] = MISSING
+        rolling_ang_vel: tuple[float, float] = MISSING
         """Linear target velocity command range (in m/s)."""
 
         #lin_vel_y: tuple[float, float] = MISSING
-        camber_angle: tuple[float, float] = MISSING
+        steer_ang_vel: tuple[float, float] = MISSING
         """Steering angle range (in rad)."""
 
         #ang_vel_z: tuple[float, float] = MISSING
