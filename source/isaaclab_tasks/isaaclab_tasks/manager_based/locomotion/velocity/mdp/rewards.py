@@ -152,6 +152,18 @@ def lin_vel_w_z_l2(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEnti
     asset: RigidObject = env.scene[asset_cfg.name]
     return torch.square(asset.data.root_lin_vel_w[:, 2])
 
+def lin_acc_w_z_l2(env: ManagerBasedRLEnv, target_body: str, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
+    """Penalize z-axis world frame linear velocity using L2 squared kernel."""
+    # extract the used quantities (to enable type-hinting)
+    asset: Articulation = env.scene[asset_cfg.name]
+    main_body_acc = asset.data.body_com_lin_acc_w
+    try:
+        body_idx = asset.data.body_names.index(target_body)
+    except ValueError:
+        raise ValueError(f"Target body '{target_body}' not found in body_names")
+    target_acc = main_body_acc[:, body_idx, :]
+    return torch.square(target_acc[:, 2])
+
 def flat_z_orientation_l2(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
     """Penalize non-flat base orientation using L2 squared kernel.
 

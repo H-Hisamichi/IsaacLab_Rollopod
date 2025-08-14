@@ -30,7 +30,8 @@ class RollopodRewards(RewardsCfg):
     feet_air_time = None
     undesired_contacts = None
     lin_vel_z_l2 = None
-    lin_vel_w_z_l2 = RewTerm(func=mdp.lin_vel_w_z_l2, weight=-4.0)
+    lin_vel_w_z_l2 = None
+    lin_acc_w_z_l2 = RewTerm(func=mdp.lin_acc_w_z_l2, weight=-0.005, params={"target_body": "MainBody"})
     steer_ang_vel_exp = RewTerm(
         func=mdp.steer_ang_vel_exp_2d, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
     )
