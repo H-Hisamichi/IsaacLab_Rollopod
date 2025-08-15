@@ -31,7 +31,7 @@ class RollopodRewards(RewardsCfg):
     undesired_contacts = None
     lin_vel_z_l2 = None
     lin_vel_w_z_l2 = None
-    lin_acc_w_z_l2 = RewTerm(func=mdp.lin_acc_w_z_l2, weight=0.0, params={"target_body": "MainBody"})
+    rolling_ang_vel = RewTerm(func=mdp.rolling_ang_vel, weight=0.01, params={"command_name": "base_velocity"})
     steer_ang_vel_exp = RewTerm(
         func=mdp.steer_ang_vel_exp_2d, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
     )
@@ -39,10 +39,10 @@ class RollopodRewards(RewardsCfg):
         func=mdp.steer_ang_vel_exp_2d, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
     )
     track_rolling_lin_vel_exp = RewTerm(
-        func=mdp.track_rolling_lin_vel_exp, weight=3.5, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
+        func=mdp.track_rolling_lin_vel_exp, weight=2.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
     )
     track_rolling_lin_vel_exp_fine_grained = RewTerm(
-        func=mdp.track_rolling_lin_vel_exp, weight=4.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
+        func=mdp.track_rolling_lin_vel_exp, weight=2.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
     )
     # -- optional penalties
     flat_orientation_l2 = None
@@ -71,13 +71,13 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.scene.robot = ROLLOPOD_B_ROLLING_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         self.scene.height_scanner = None
 
-        self.commands.base_velocity = mdp.CamberAngleANDRollingVelocityCommand(
+        self.commands.base_velocity = mdp.CamberAngleANDRollingVelocityCommandCfg(
             asset_name="robot",
             resampling_time_range=(10.0, 10.0),
             rel_standing_envs=0.02,
             debug_vis=False,
-            ranges=mdp.CamberAngleANDRollingVelocityCommand.Ranges(
-                rolling_ang_vel=(-2.78, 2.78), steer_ang_vel=(-1.0, 1.0), #rolling_radius=(0.35)
+            ranges=mdp.CamberAngleANDRollingVelocityCommandCfg.Ranges(
+                rolling_lin_vel=(-2.78, 2.78), steer_ang_vel=(-1.0, 1.0), #rolling_radius=(0.35)
             ),
         )
 
@@ -92,8 +92,9 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             use_default_offset=True
         )
 
+        # observations
         self.observations.policy.base_lin_vel = ObsTerm(
-            func=mdp.generated_commands, params={"command_name": "base_velocity"}
+            func=mdp.base_com_lin_vel, noise=Unoise(n_min=-0.2, n_max=0.2)
         )
         self.observations.policy.base_ang_vel = ObsTerm(
             func=mdp.base_com_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2)
@@ -117,11 +118,6 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             "asset_cfg": SceneEntityCfg("robot", body_names="MainBody"),
             "com_range": {"x": (-0.05, 0.05), "y": (-0.05, 0.05), "z": (-0.01, 0.01)},
         }
-        self.events.base_external_force_torque.params = {
-            "asset_cfg": SceneEntityCfg("robot", body_names="MainBody"),
-            "force_range": (0.0, 0.0),
-            "torque_range": (-0.0, 0.0),
-        }
         self.events.reset_base.params = {
             "pose_range": {"yaw": (-3.14, 3.14)}, # def: (-3.14, 3.14)
             "velocity_range": {
@@ -142,7 +138,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
 
         self.terminations.base_contact.params = {"sensor_cfg": SceneEntityCfg("contact_forces", body_names="MainBody"), "threshold": 1.0}
 
-        #self.curriculum.terrain_levels.func = TraveledDistanceRecorder
+        self.curriculum.terrain_levels.func = mdp.terrain_levels_vel_rollopod
 
         
 

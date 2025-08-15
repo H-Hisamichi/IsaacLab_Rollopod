@@ -20,6 +20,54 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         super().__post_init__()
         # switch robot to rollopod-b
         self.scene.robot = ROLLOPOD_B_WALKING_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.commands.base_velocity.debug_vis = False
+
+        # observations
+        self.observations.policy.base_lin_vel = ObsTerm(
+            func=mdp.base_com_lin_vel, noise=Unoise(n_min=-0.2, n_max=0.2)
+        )
+        self.observations.policy.base_ang_vel = ObsTerm(
+            func=mdp.base_com_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2)
+        )
+
+        # events
+        self.events.physics_material.params = {
+            "asset_cfg": SceneEntityCfg("robot", body_names=".*"),
+            "static_friction_range": (0.7, 0.9),#(0.8, 0.8),
+            "dynamic_friction_range": (0.6, 0.9),#(0.6, 0.6),
+            "restitution_range": (0.0, 0.0),
+            "num_buckets": 64,
+            "make_consistent": True
+        }
+        self.events.add_base_mass.params = {
+            "asset_cfg": SceneEntityCfg("robot", body_names="MainBody"),
+            "mass_distribution_params": (-3.0, 5.0),
+            "operation": "add",
+        }
+        self.events.base_com.params = {
+            "asset_cfg": SceneEntityCfg("robot", body_names="MainBody"),
+            "com_range": {"x": (-0.05, 0.05), "y": (-0.05, 0.05), "z": (-0.01, 0.01)},
+        }
+        self.events.reset_base.params = {
+            "pose_range": {"yaw": (-3.14, 3.14)}, # def: (-3.14, 3.14)
+            "velocity_range": {
+                "x": (0.0, 0.0),
+                "y": (0.0, 0.0),
+                "z": (0.0, 0.0),
+                "roll": (0.0, 0.0),
+                "pitch": (0.0, 0.0),
+                "yaw": (0.0, 0.0),
+            },
+        }
+
+        self.rewards.feet_air_time.params = {
+            "sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*Toes"),
+            "command_name": "base_velocity",
+            "threshold": 0.5,
+        },
+        self.rewards.undesired_contacts = None
+
+        self.terminations.base_contact.params = {"sensor_cfg": SceneEntityCfg("contact_forces", body_names="MainBody"), "threshold": 1.0}
 
 
 @configclass

@@ -42,7 +42,7 @@ class RollopodBFlatPPORunnerCfg(RollopodBRoughPPORunnerCfg):
     def __post_init__(self):
         super().__post_init__()
 
-        self.max_iterations = 15000
+        self.max_iterations = 5000
         self.save_interval = 100
         self.experiment_name = "rollopod_b_flat"
         self.policy.actor_hidden_dims = [512, 256, 128, 64]

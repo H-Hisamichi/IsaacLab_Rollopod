@@ -19,7 +19,7 @@ from isaaclab.markers import VisualizationMarkers
 if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedEnv, ManagerBasedRLEnv
 
-    from .commands_cfg import NormalVelocityCommandCfg, UniformVelocityCommandCfg, CamberAngleANDRollingVelocityCommandCfg
+    from .commands_cfg import NormalVelocityCommandCfg, UniformVelocityCommandCfg, CamberAngleANDRollingVelocityCommandCfg, CamberAngleANDRollingAngularVelocityCommandCfg
 
 
 class CamberAngleANDRollingAngularVelocityCommand(CommandTerm):
@@ -31,11 +31,11 @@ class CamberAngleANDRollingAngularVelocityCommand(CommandTerm):
     """
 
     #cfg: UniformVelocityCommandCfg
-    cfg: CamberAngleANDRollingVelocityCommandCfg
+    cfg: CamberAngleANDRollingAngularVelocityCommandCfg
     """The configuration of the command generator."""
 
     #def __init__(self, cfg: UniformVelocityCommandCfg, env: ManagerBasedEnv):
-    def __init__(self, cfg: CamberAngleANDRollingVelocityCommandCfg, env: ManagerBasedEnv):
+    def __init__(self, cfg: CamberAngleANDRollingAngularVelocityCommandCfg, env: ManagerBasedEnv):
         """Initialize the command generator.
 
         Args:
@@ -267,7 +267,7 @@ class CamberAngleANDRollingVelocityCommand(CommandTerm):
         self.is_standing_env = torch.zeros_like(self.is_heading_env)
         # -- metrics
         self.metrics["error_lin_vel"] = torch.zeros(self.num_envs, device=self.device)
-        self.metrics["error_steer_angle"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["error_steer_ang_vel"] = torch.zeros(self.num_envs, device=self.device)
 
     def __str__(self) -> str:
         """Return a string representation of the command generator."""
@@ -323,12 +323,12 @@ class CamberAngleANDRollingVelocityCommand(CommandTerm):
         _r_scalar = torch.empty(len(env_ids), device=self.device)
         _r_steer_ang_vel = torch.empty(len(env_ids), device=self.device)
         #
-        _scalar = _r_scalar.uniform_(*self.cfg.ranges.rolling_ang_vel)
+        _rolling_lin_vel = _r_scalar.uniform_(*self.cfg.ranges.rolling_lin_vel)
         _steer_ang_vel = _r_steer_ang_vel.uniform_(*self.cfg.ranges.steer_ang_vel)
         # -- linear velocity - x direction
         #self.vel_command_b[env_ids, 0] = r.uniform_(*self.cfg.ranges.lin_vel_x)
         #self.vel_command_b[env_ids, 0] = _scalar * torch.sin(_command_range)
-        self.vel_command_b[env_ids, 0] = _scalar
+        self.vel_command_b[env_ids, 0] = _rolling_lin_vel
         # -- linear velocity - y direction
         #self.vel_command_b[env_ids, 1] = r.uniform_(*self.cfg.ranges.lin_vel_y)
         #self.vel_command_b[env_ids, 1] = _scalar * torch.cos(_command_range)
