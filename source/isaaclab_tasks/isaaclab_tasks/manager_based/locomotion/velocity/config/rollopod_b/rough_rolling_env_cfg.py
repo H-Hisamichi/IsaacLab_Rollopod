@@ -32,23 +32,14 @@ class RollopodRewards(RewardsCfg):
     lin_vel_z_l2 = None
     lin_vel_w_z_l2 = None
     rolling_ang_vel = RewTerm(func=mdp.rolling_ang_vel, weight=0.01, params={"command_name": "base_velocity"})
-    steer_ang_vel_exp = RewTerm(
-        func=mdp.steer_ang_vel_exp_2d, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
-    )
-    steer_ang_vel_exp_fine_grained = RewTerm(
-        func=mdp.steer_ang_vel_exp_2d, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
-    )
-    track_rolling_lin_vel_exp = RewTerm(
-        func=mdp.track_rolling_lin_vel_exp, weight=2.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
-    )
-    track_rolling_lin_vel_exp_fine_grained = RewTerm(
-        func=mdp.track_rolling_lin_vel_exp, weight=2.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
+    track_lin_vel_xy_w_exp = RewTerm(
+        func=mdp.track_lin_vel_xy_w_exp, weight=2.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
     )
     # -- optional penalties
     flat_orientation_l2 = None
     flat_z_orientation_l2 = RewTerm(func=mdp.flat_z_orientation_l2, weight=-4.0)
     shake_rolling_penalty = RewTerm(
-        func=mdp.shake_rolling_penalty, weight=-0.5, params={"command_name": "base_velocity", "scale": 0.5}
+        func=mdp.shake_rolling_penalty, weight=-0.0, params={"command_name": "base_velocity", "scale": 0.5}
     )
     rolling_slip_penalty = RewTerm(
         func=mdp.rolling_slip_penalty_v2, weight=-0.4, params={ "scale": 0.6, "rolling_radius": 0.43}

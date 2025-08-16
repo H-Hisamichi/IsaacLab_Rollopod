@@ -225,3 +225,21 @@ def rolling_slip_penalty_v2(
     # compute the error
     _rolling_vel_error = vel_perp - _est_lin_vel
     return torch.exp(scale * torch.abs(_rolling_vel_error))
+
+"""
+Velocity-tracking rewards.
+"""
+
+
+def track_lin_vel_xy_w_exp(
+    env: ManagerBasedRLEnv, std: float, command_name: str, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
+    """Reward tracking of linear velocity commands (xy axes) using exponential kernel."""
+    # extract the used quantities (to enable type-hinting)
+    asset: RigidObject = env.scene[asset_cfg.name]
+    # compute the error
+    lin_vel_error = torch.sum(
+        torch.square(env.command_manager.get_command(command_name) - asset.data.root_lin_vel_w[:, :2]),
+        dim=1,
+    )
+    return torch.exp(-lin_vel_error / std**2)
