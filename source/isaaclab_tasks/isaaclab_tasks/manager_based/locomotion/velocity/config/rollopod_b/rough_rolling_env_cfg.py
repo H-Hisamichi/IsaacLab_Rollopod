@@ -31,9 +31,12 @@ class RollopodRewards(RewardsCfg):
     undesired_contacts = None
     lin_vel_z_l2 = None
     lin_vel_w_z_l2 = None
-    rolling_ang_vel = RewTerm(func=mdp.rolling_ang_vel, weight=0.01, params={"command_name": "base_velocity"})
+    rolling_ang_vel = RewTerm(func=mdp.rolling_ang_vel, weight=0.1, params={"command_name": "base_velocity"})
     track_lin_vel_xy_w_exp = RewTerm(
-        func=mdp.track_lin_vel_xy_w_exp, weight=2.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
+        func=mdp.track_lin_vel_xy_w_exp, weight=5.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
+    )
+    track_lin_vel_xy_w_exp_fine_grained = RewTerm(
+        func=mdp.track_lin_vel_xy_w_exp, weight=5.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
     )
     # -- optional penalties
     flat_orientation_l2 = None
@@ -84,12 +87,12 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         )
 
         # observations
-        self.observations.policy.base_lin_vel = ObsTerm(
-            func=mdp.base_com_lin_vel, noise=Unoise(n_min=-0.2, n_max=0.2)
-        )
-        self.observations.policy.base_ang_vel = ObsTerm(
-            func=mdp.base_com_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2)
-        )
+        #self.observations.policy.base_lin_vel = ObsTerm(
+        #    func=mdp.base_com_lin_vel, noise=Unoise(n_min=-0.2, n_max=0.2)
+        #)
+        #self.observations.policy.base_ang_vel = ObsTerm(
+        #    func=mdp.base_com_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2)
+        #)
         self.observations.policy.height_scan = None
 
         self.events.physics_material.params = {
@@ -110,7 +113,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             "com_range": {"x": (-0.05, 0.05), "y": (-0.05, 0.05), "z": (-0.01, 0.01)},
         }
         self.events.reset_base.params = {
-            "pose_range": {"yaw": (-3.14, 3.14)}, # def: (-3.14, 3.14)
+            "pose_range": {"pitch": (-3.14, 3.14)}, # def: (-3.14, 3.14)
             "velocity_range": {
                 "x": (0.0, 0.0),
                 "y": (0.0, 0.0),
