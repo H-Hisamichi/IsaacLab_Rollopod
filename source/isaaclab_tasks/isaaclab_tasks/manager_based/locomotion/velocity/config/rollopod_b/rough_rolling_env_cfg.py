@@ -68,7 +68,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             rel_standing_envs=0.02,
             debug_vis=False,
             ranges=mdp.UniformWorldVelocityCommandCfg.Ranges(
-                lin_vel_x=(-2.78, 2.78), lin_vel_x=(-2.78, 2.78),
+                lin_vel_x=(-2.78, 2.78), lin_vel_y=(-2.78, 2.78),
             ),
         )
 
