@@ -71,13 +71,13 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.scene.robot = ROLLOPOD_B_ROLLING_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         self.scene.height_scanner = None
 
-        self.commands.base_velocity = mdp.CamberAngleANDRollingVelocityCommandCfg(
+        self.commands.base_velocity = mdp.UniformWorldVelocityCommandCfg(
             asset_name="robot",
             resampling_time_range=(10.0, 10.0),
             rel_standing_envs=0.02,
             debug_vis=False,
-            ranges=mdp.CamberAngleANDRollingVelocityCommandCfg.Ranges(
-                rolling_lin_vel=(-2.78, 2.78), steer_ang_vel=(-1.0, 1.0), #rolling_radius=(0.35)
+            ranges=mdp.UniformWorldVelocityCommandCfg.Ranges(
+                lin_vel_x=(-2.78, 2.78), lin_vel_x=(-2.78, 2.78),
             ),
         )
 

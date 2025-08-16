@@ -15,7 +15,7 @@ from .null_command import NullCommand
 from .pose_2d_command import TerrainBasedPose2dCommand, UniformPose2dCommand
 from .pose_command import UniformPoseCommand
 from .velocity_command import NormalVelocityCommand, UniformVelocityCommand
-from .rolling_command import CamberAngleANDRollingVelocityCommand, CamberAngleANDRollingAngularVelocityCommand
+from .rolling_command import CamberAngleANDRollingVelocityCommand, CamberAngleANDRollingAngularVelocityCommand, UniformRollingVelocityCommand
 
 
 @configclass
@@ -370,6 +370,45 @@ class CamberAngleANDRollingVelocityCommandCfg(CommandTermCfg):
 
         This parameter is only used if :attr:`~UniformVelocityCommandCfg.heading_command` is True.
         """
+
+    ranges: Ranges = MISSING
+    """Distribution ranges for the velocity commands."""
+
+    goal_vel_visualizer_cfg: VisualizationMarkersCfg = GREEN_ARROW_X_MARKER_CFG.replace(
+        prim_path="/Visuals/Command/velocity_goal"
+    )
+    """The configuration for the goal velocity visualization marker. Defaults to GREEN_ARROW_X_MARKER_CFG."""
+
+    current_vel_visualizer_cfg: VisualizationMarkersCfg = BLUE_ARROW_X_MARKER_CFG.replace(
+        prim_path="/Visuals/Command/velocity_current"
+    )
+    """The configuration for the current velocity visualization marker. Defaults to BLUE_ARROW_X_MARKER_CFG."""
+
+    # Set the scale of the visualization markers to (0.5, 0.5, 0.5)
+    goal_vel_visualizer_cfg.markers["arrow"].scale = (0.5, 0.5, 0.5)
+    current_vel_visualizer_cfg.markers["arrow"].scale = (0.5, 0.5, 0.5)
+
+@configclass
+class UniformWorldVelocityCommandCfg(CommandTermCfg):
+    """Configuration for the uniform velocity command generator."""
+
+    class_type: type = UniformRollingVelocityCommand
+
+    asset_name: str = MISSING
+    """Name of the asset in the environment for which the commands are generated."""
+
+    rel_standing_envs: float = 0.0
+    """The sampled probability of environments that should be standing still. Defaults to 0.0."""
+
+    @configclass
+    class Ranges:
+        """Uniform distribution ranges for the velocity commands."""
+
+        lin_vel_x: tuple[float, float] = MISSING
+        """Range for the linear-x velocity command (in m/s)."""
+
+        lin_vel_y: tuple[float, float] = MISSING
+        """Range for the linear-y velocity command (in m/s)."""
 
     ranges: Ranges = MISSING
     """Distribution ranges for the velocity commands."""
