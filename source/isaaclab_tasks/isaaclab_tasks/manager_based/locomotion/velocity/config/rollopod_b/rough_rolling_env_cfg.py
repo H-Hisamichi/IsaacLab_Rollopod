@@ -30,7 +30,7 @@ class RollopodRewards(RewardsCfg):
     feet_air_time = None
     undesired_contacts = None
     lin_vel_z_l2 = None
-    lin_vel_w_z_l2 = None
+    lin_vel_w_z_l2 = RewTerm(func=mdp.lin_vel_w_z_l2, weight=-2.0)
     #rolling_ang_vel = RewTerm(func=mdp.rolling_ang_vel, weight=0.1, params={"command_name": "base_velocity"})
     track_lin_vel_xy_w_exp = RewTerm(
         func=mdp.track_lin_vel_xy_w_exp, weight=5.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
@@ -118,6 +118,11 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             "asset_cfg": SceneEntityCfg("robot", body_names="MainBody"),
             "com_range": {"x": (-0.05, 0.05), "y": (-0.05, 0.05), "z": (-0.01, 0.01)},
         }
+        self.events.base_external_force_torque.params = {
+            "asset_cfg": SceneEntityCfg("robot", body_names="MainBody"),
+            "force_range": (0.0, 0.0),
+            "torque_range": (-0.0, 0.0),
+        }
         self.events.reset_base.params = {
             "pose_range": {"pitch": (-3.14, 3.14)}, # def: (-3.14, 3.14)
             "velocity_range": {
@@ -132,6 +137,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.events.reset_robot_joints = None
         self.events.push_robot.params = {"velocity_range": {"yaw": (-0.5, 0.5)}}
 
+        # Rewards
         self.rewards.dof_torques_l2.weight = -2.0e-5
         self.rewards.dof_acc_l2.weight = -4.0e-7
         self.rewards.action_rate_l2.weight = -0.004

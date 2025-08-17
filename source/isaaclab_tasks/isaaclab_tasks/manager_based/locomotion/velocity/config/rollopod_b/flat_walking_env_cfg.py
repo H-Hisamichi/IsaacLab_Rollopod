@@ -22,8 +22,8 @@ class RollopodBFlatEnvCfg(RollopodBRoughEnvCfg):
         self.scene.terrain.terrain_type = "plane"
         self.scene.terrain.terrain_generator = None
         # no height scan
-        self.scene.height_scanner = None
-        self.observations.policy.height_scan = None
+        #self.scene.height_scanner = None
+        #self.observations.policy.height_scan = None
         # no terrain curriculum
         self.curriculum.terrain_levels = None
 
