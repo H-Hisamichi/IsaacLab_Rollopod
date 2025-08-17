@@ -214,6 +214,18 @@ def shake_rolling_penalty(
     shake_rolling_error = torch.zeros(_command.shape[0], device=_command.device)
     return torch.where(same_sign, shake_rolling_error, torch.exp(scale * torch.abs(_root_ang_vel_b)))
 
+def ang_acc_w_z_l2(env: ManagerBasedRLEnv, target_body: str, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
+    """Penalize z-axis world frame linear velocity using L2 squared kernel."""
+    # extract the used quantities (to enable type-hinting)
+    asset: Articulation = env.scene[asset_cfg.name]
+    main_body_acc = asset.data.body_com_ang_acc_w
+    try:
+        body_idx = asset.data.body_names.index(target_body)
+    except ValueError:
+        raise ValueError(f"Target body '{target_body}' not found in body_names")
+    target_acc = main_body_acc[:, body_idx, :]
+    return torch.square(target_acc[:, 2])
+
 def rolling_slip_penalty_v2(
     env: ManagerBasedRLEnv, scale: float, rolling_radius: float, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
 ) -> torch.Tensor:

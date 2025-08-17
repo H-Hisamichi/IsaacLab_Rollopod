@@ -53,6 +53,7 @@ class RollopodRewards(RewardsCfg):
     rolling_slip_penalty = RewTerm(
         func=mdp.rolling_slip_penalty_v2, weight=-0.4, params={ "scale": 0.6, "rolling_radius": 0.43}
     )
+    shake_rolling_penalty = RewTerm(func=mdp.ang_acc_w_z_l2, weight=-0.001, params={"target_body": "MainBody"})
 
 @configclass
 class RollopodCurriculums(CurriculumCfg):
