@@ -36,13 +36,13 @@ class RollopodRewards(RewardsCfg):
         func=mdp.track_lin_vel_xy_w_exp, weight=5.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
     )
     track_lin_vel_xy_w_exp_fine_grained = RewTerm(
-        func=mdp.track_lin_vel_xy_w_exp, weight=5.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
+        func=mdp.track_lin_vel_xy_w_exp, weight=0.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
     )
     track_rolling_ang_vel_exp = RewTerm(
         func=mdp.track_rolling_ang_vel_exp, weight=5.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
     )
     track_rolling_ang_vel_exp_fine_grained = RewTerm(
-        func=mdp.track_rolling_ang_vel_exp, weight=5.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
+        func=mdp.track_rolling_ang_vel_exp, weight=0.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
     )
     # -- optional penalties
     flat_orientation_l2 = None
@@ -53,7 +53,7 @@ class RollopodRewards(RewardsCfg):
     rolling_slip_penalty = RewTerm(
         func=mdp.rolling_slip_penalty_v2, weight=-0.4, params={ "scale": 0.6, "rolling_radius": 0.43}
     )
-    shake_rolling_penalty = RewTerm(func=mdp.ang_acc_w_z_l2, weight=-0.0001, params={"target_body": "MainBody"})
+    shake_rolling_penalty = RewTerm(func=mdp.ang_acc_w_z_l2, weight=-0.0, params={"target_body": "MainBody"})
 
 @configclass
 class RollopodCurriculums(CurriculumCfg):
