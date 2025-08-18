@@ -114,8 +114,8 @@ def track_rolling_ang_vel_exp(
 ) -> torch.Tensor:
     """Reward tracking of angular velocity commands (yaw) in world frame using exponential kernel."""
     # extract the used quantities (to enable type-hinting)
-    asset = env.scene[asset_cfg.name]
-    ang_vel_error = (torch.norm(env.command_manager.get_command(command_name), dim=1) / 0.45) - asset.data.root_com_ang_vel_b[:, 2]
+    asset: Articulation = env.scene[asset_cfg.name]
+    ang_vel_error = torch.square((torch.norm(env.command_manager.get_command(command_name), dim=1) / 0.43) - torch.abs(asset.data.root_com_ang_vel_b[:, 2]))
     return torch.exp(-ang_vel_error / std**2)
 
 def track_ang_vel_z_world_exp(
@@ -171,7 +171,7 @@ def track_com_ang_vel_z_exp(
     # extract the used quantities (to enable type-hinting)
     asset: RigidObject = env.scene[asset_cfg.name]
     # compute the error
-    ang_vel_error = torch.square(env.command_manager.get_command(command_name)[:, 0] - asset.data.root_com_ang_vel_b[:, 2])
+    ang_vel_error = torch.square(env.command_manager.get_command(command_name)[:, 2] - asset.data.root_com_ang_vel_b[:, 2])
     return torch.exp(-ang_vel_error / std**2)
 
 def lin_vel_w_z_l2(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
@@ -219,10 +219,7 @@ def ang_acc_w_z_l2(env: ManagerBasedRLEnv, target_body: str, asset_cfg: SceneEnt
     # extract the used quantities (to enable type-hinting)
     asset: Articulation = env.scene[asset_cfg.name]
     main_body_acc = asset.data.body_com_ang_acc_w
-    try:
-        body_idx = asset.data.body_names.index(target_body)
-    except ValueError:
-        raise ValueError(f"Target body '{target_body}' not found in body_names")
+    body_idx = asset.data.body_names.index(target_body)
     target_acc = main_body_acc[:, body_idx, :]
     return torch.square(target_acc[:, 2])
 
@@ -260,7 +257,7 @@ def track_lin_vel_xy_w_exp(
     asset: RigidObject = env.scene[asset_cfg.name]
     # compute the error
     lin_vel_error = torch.sum(
-        torch.square(env.command_manager.get_command(command_name) - asset.data.root_lin_vel_w[:, :2]),
+        torch.square(env.command_manager.get_command(command_name)[:, :2] - asset.data.root_lin_vel_w[:, :2]),
         dim=1,
     )
     return torch.exp(-lin_vel_error / std**2)

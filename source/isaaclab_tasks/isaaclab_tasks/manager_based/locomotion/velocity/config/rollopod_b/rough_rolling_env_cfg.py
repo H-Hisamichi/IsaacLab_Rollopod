@@ -30,30 +30,30 @@ class RollopodRewards(RewardsCfg):
     feet_air_time = None
     undesired_contacts = None
     lin_vel_z_l2 = None
-    lin_vel_w_z_l2 = RewTerm(func=mdp.lin_vel_w_z_l2, weight=-2.0)
+    lin_vel_w_z_l2 = RewTerm(func=mdp.lin_vel_w_z_l2, weight=-0.5)
     #rolling_ang_vel = RewTerm(func=mdp.rolling_ang_vel, weight=0.1, params={"command_name": "base_velocity"})
     track_lin_vel_xy_w_exp = RewTerm(
-        func=mdp.track_lin_vel_xy_w_exp, weight=5.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
+        func=mdp.track_lin_vel_xy_w_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
     )
     track_lin_vel_xy_w_exp_fine_grained = RewTerm(
-        func=mdp.track_lin_vel_xy_w_exp, weight=0.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
+        func=mdp.track_lin_vel_xy_w_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
     )
     track_rolling_ang_vel_exp = RewTerm(
-        func=mdp.track_rolling_ang_vel_exp, weight=5.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
+        func=mdp.track_com_ang_vel_z_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
     )
     track_rolling_ang_vel_exp_fine_grained = RewTerm(
-        func=mdp.track_rolling_ang_vel_exp, weight=0.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
+        func=mdp.track_com_ang_vel_z_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
     )
     # -- optional penalties
     flat_orientation_l2 = None
-    flat_z_orientation_l2 = RewTerm(func=mdp.flat_z_orientation_l2, weight=-4.0)
+    flat_z_orientation_l2 = RewTerm(func=mdp.flat_z_orientation_l2, weight=-1.0)
     #shake_rolling_penalty = RewTerm(
     #    func=mdp.shake_rolling_penalty, weight=-0.0, params={"command_name": "base_velocity", "scale": 0.5}
     #)
     rolling_slip_penalty = RewTerm(
-        func=mdp.rolling_slip_penalty_v2, weight=-0.4, params={ "scale": 0.6, "rolling_radius": 0.43}
+        func=mdp.rolling_slip_penalty_v2, weight=-0.1, params={ "scale": 0.6, "rolling_radius": 0.43}
     )
-    shake_rolling_penalty = RewTerm(func=mdp.ang_acc_w_z_l2, weight=-0.0, params={"target_body": "MainBody"})
+    #shake_rolling_penalty = RewTerm(func=mdp.ang_acc_w_z_l2, weight=-0.0001, params={"target_body": "MainBody"})
 
 @configclass
 class RollopodCurriculums(CurriculumCfg):
@@ -139,9 +139,9 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.events.push_robot.params = {"velocity_range": {"yaw": (-0.5, 0.5)}}
 
         # Rewards
-        self.rewards.dof_torques_l2.weight = -2.0e-5
-        self.rewards.dof_acc_l2.weight = -4.0e-7
-        self.rewards.action_rate_l2.weight = -0.004
+        self.rewards.dof_torques_l2.weight = -0.7e-5
+        self.rewards.dof_acc_l2.weight = -0.5e-7
+        self.rewards.action_rate_l2.weight = -0.002
 
         self.terminations.base_contact.params = {"sensor_cfg": SceneEntityCfg("contact_forces", body_names="MainBody"), "threshold": 1.0}
 

@@ -49,13 +49,13 @@ class UniformRollingVelocityCommand(CommandTerm):
 
         # crete buffers to store the command
         # -- command: x vel, y vel, yaw vel, heading
-        self.vel_command_b = torch.zeros(self.num_envs, 2, device=self.device)
+        self.vel_command_b = torch.zeros(self.num_envs, 3, device=self.device)
         #self.heading_target = torch.zeros(self.num_envs, device=self.device)
         self.is_heading_env = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
         self.is_standing_env = torch.zeros_like(self.is_heading_env)
         # -- metrics
         self.metrics["error_vel_xy"] = torch.zeros(self.num_envs, device=self.device)
-        #self.metrics["error_vel_yaw"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["error_ang_z"] = torch.zeros(self.num_envs, device=self.device)
 
     def __str__(self) -> str:
         """Return a string representation of the command generator."""
@@ -87,7 +87,10 @@ class UniformRollingVelocityCommand(CommandTerm):
         max_command_step = max_command_time / self._env.step_dt
         # logs data
         self.metrics["error_vel_xy"] += (
-            torch.norm(self.vel_command_b - self.robot.data.root_lin_vel_w[:, :2], dim=-1) / max_command_step
+            torch.norm(self.vel_command_b[:, :2] - self.robot.data.root_lin_vel_w[:, :2], dim=-1) / max_command_step
+        )
+        self.metrics["error_ang_z"] += (
+            (self.vel_command_b[:, -1] - self.robot.data.root_ang_vel_b[:, -1]) / max_command_step
         )
 
     def _resample_command(self, env_ids: Sequence[int]):
@@ -97,6 +100,11 @@ class UniformRollingVelocityCommand(CommandTerm):
         self.vel_command_b[env_ids, 0] = r.uniform_(*self.cfg.ranges.lin_vel_x)
         # -- linear velocity - y direction
         self.vel_command_b[env_ids, 1] = r.uniform_(*self.cfg.ranges.lin_vel_y)
+        # -- angular velocity - z direction
+        self.vel_command_b[env_ids, 2] = (
+            torch.norm(self.vel_command_b[env_ids, :2], dim=1) / self.cfg.robot_radius
+            ) *(torch.randint(0, 2, (len(env_ids),), device=self.vel_command_b.device) * 2 - 1
+        )
         
         # update standing envs
         self.is_standing_env[env_ids] = r.uniform_(0.0, 1.0) <= self.cfg.rel_standing_envs

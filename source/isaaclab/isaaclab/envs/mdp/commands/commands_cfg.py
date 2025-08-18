@@ -400,6 +400,9 @@ class UniformWorldVelocityCommandCfg(CommandTermCfg):
     rel_standing_envs: float = 0.0
     """The sampled probability of environments that should be standing still. Defaults to 0.0."""
 
+    robot_radius: float = 0.43
+    """The radius of the robot in rolling mode (in m). Defaults to 0.43."""
+
     @configclass
     class Ranges:
         """Uniform distribution ranges for the velocity commands."""
