@@ -21,6 +21,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         super().__post_init__()
         # switch robot to rollopod-b
         self.scene.robot = ROLLOPOD_B_WALKING_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.height_scanner.prim_path = "{ENV_REGEX_NS}/Robot/MainBody"
         self.commands.base_velocity.debug_vis = False
 
         # events
@@ -52,7 +53,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             "sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*Toes"),
             "command_name": "base_velocity",
             "threshold": 0.5,
-        },
+        }
         self.rewards.undesired_contacts = None
 
         self.terminations.base_contact.params = {"sensor_cfg": SceneEntityCfg("contact_forces", body_names="MainBody"), "threshold": 1.0}
