@@ -15,7 +15,7 @@ from .null_command import NullCommand
 from .pose_2d_command import TerrainBasedPose2dCommand, UniformPose2dCommand
 from .pose_command import UniformPoseCommand
 from .velocity_command import NormalVelocityCommand, UniformVelocityCommand
-from .rolling_command import CamberAngleANDRollingVelocityCommand, CamberAngleANDRollingAngularVelocityCommand, UniformRollingVelocityCommand
+from .rolling_command import CamberAngleANDRollingVelocityCommand, CamberAngleANDRollingAngularVelocityCommand, UniformWorldVelocityCommand
 
 
 @configclass
@@ -392,7 +392,7 @@ class CamberAngleANDRollingVelocityCommandCfg(CommandTermCfg):
 class UniformWorldVelocityCommandCfg(CommandTermCfg):
     """Configuration for the uniform velocity command generator."""
 
-    class_type: type = UniformRollingVelocityCommand
+    class_type: type = UniformWorldVelocityCommand
 
     asset_name: str = MISSING
     """Name of the asset in the environment for which the commands are generated."""

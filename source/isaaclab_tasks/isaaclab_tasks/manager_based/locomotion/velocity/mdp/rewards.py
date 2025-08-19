@@ -169,7 +169,7 @@ def track_com_ang_vel_z_exp(
 ) -> torch.Tensor:
     """Reward tracking of angular velocity commands (yaw) using exponential kernel."""
     # extract the used quantities (to enable type-hinting)
-    asset: RigidObject = env.scene[asset_cfg.name]
+    asset: Articulation = env.scene[asset_cfg.name]
     # compute the error
     ang_vel_error = torch.square(env.command_manager.get_command(command_name)[:, 2] - asset.data.root_com_ang_vel_b[:, 2])
     return torch.exp(-ang_vel_error / std**2)

@@ -39,10 +39,10 @@ class RollopodRewards(RewardsCfg):
         func=mdp.track_lin_vel_xy_w_exp, weight=0.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
     )
     track_rolling_ang_vel_exp = RewTerm(
-        func=mdp.track_rolling_ang_vel_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
+        func=mdp.track_com_ang_vel_z_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
     )
     track_rolling_ang_vel_exp_fine_grained = RewTerm(
-        func=mdp.track_rolling_ang_vel_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
+        func=mdp.track_com_ang_vel_z_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
     )
     # -- optional penalties
     flat_orientation_l2 = None

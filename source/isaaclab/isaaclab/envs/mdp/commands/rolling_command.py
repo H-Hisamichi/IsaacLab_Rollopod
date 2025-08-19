@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from .commands_cfg import NormalVelocityCommandCfg, UniformVelocityCommandCfg, CamberAngleANDRollingVelocityCommandCfg, CamberAngleANDRollingAngularVelocityCommandCfg, UniformWorldVelocityCommandCfg
 
 
-class UniformRollingVelocityCommand(CommandTerm):
+class UniformWorldVelocityCommand(CommandTerm):
     r"""
 
     """
