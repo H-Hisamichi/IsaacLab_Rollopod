@@ -78,7 +78,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             rel_standing_envs=0.02,
             debug_vis=False,
             ranges=mdp.UniformWorldVelocityCommandCfg.Ranges(
-                rolling_speed=(-3.0, 3.0),
+                rolling_speed=(-8.46, 8.46),
             ),
         )
 
