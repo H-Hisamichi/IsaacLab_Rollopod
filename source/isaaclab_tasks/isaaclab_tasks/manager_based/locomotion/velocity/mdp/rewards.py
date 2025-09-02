@@ -229,6 +229,14 @@ def ang_acc_w_z_l2(env: ManagerBasedRLEnv, target_body: str, asset_cfg: SceneEnt
     target_acc = main_body_acc[:, body_idx, :]
     return torch.square(target_acc[:, 2])
 
+def rolling_slip_penalty(env: ManagerBasedRLEnv, scale: float, rolling_radius: float, command_name: str, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
+    """Rolling slip penalty using estimated speed."""
+    # extract the used quantities (to enable type-hinting)
+    asset: Articulation = env.scene[asset_cfg.name]
+    target_lin_val = torch.abs(env.command_manager.get_command(command_name)[:, -1] * rolling_radius)
+    current_lin_vel = torch.norm(asset.data.root_com_lin_vel_b[:, :2], dim=1)
+    return torch.exp(scale * torch.abs(target_lin_val - current_lin_vel))
+
 def rolling_slip_penalty_v2(
     env: ManagerBasedRLEnv, scale: float, rolling_radius: float, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
 ) -> torch.Tensor:
