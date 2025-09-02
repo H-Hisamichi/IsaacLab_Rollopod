@@ -33,13 +33,13 @@ class RollopodRewards(RewardsCfg):
     lin_vel_w_z_l2 = RewTerm(func=mdp.lin_vel_w_z_l2, weight=-0.5)
     #rolling_ang_vel = RewTerm(func=mdp.rolling_ang_vel, weight=0.1, params={"command_name": "base_velocity"})
     track_lin_vel_xy_w_exp = RewTerm(
-        func=mdp.track_lin_vel_xy_w_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
+        func=mdp.track_lin_vel_dir_xy_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
     )
     #track_lin_vel_xy_w_exp_fine_grained = RewTerm(
     #    func=mdp.track_lin_vel_xy_w_exp, weight=0.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
     #)
-    track_rolling_ang_vel_exp = RewTerm(
-        func=mdp.track_com_ang_vel_z_exp, weight=2.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
+    track_com_ang_vel_z_exp = RewTerm(
+        func=mdp.track_com_ang_vel_z_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25), "std_2": math.sqrt(1.5)}
     )
     #track_rolling_ang_vel_exp_fine_grained = RewTerm(
     #    func=mdp.track_com_ang_vel_z_exp, weight=2.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
@@ -112,7 +112,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         }
         self.events.add_base_mass.params = {
             "asset_cfg": SceneEntityCfg("robot", body_names="MainBody"),
-            "mass_distribution_params": (-3.0, 5.0),
+            "mass_distribution_params": (-0.5, 0.5),
             "operation": "add",
         }
         self.events.base_com.params = {

@@ -267,3 +267,26 @@ def track_lin_vel_xy_w_exp(
         dim=1,
     )
     return torch.exp(-lin_vel_error / std**2)
+
+def track_lin_vel_dir_xy_exp(
+    env: ManagerBasedRLEnv, std: float, command_name: str, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
+    """Reward tracking of linear velocity *direction* (xy-plane) using exponential kernel.
+       Assumes command is a unit vector in xy-plane.
+    """
+    # extract the used quantities
+    asset: RigidObject = env.scene[asset_cfg.name]
+
+    # commanded direction (unit vector)
+    cmd_dir = env.command_manager.get_command(command_name)[:, :2]
+
+    # actual velocity direction (normalize to unit vector, avoid div-by-zero)
+    vel_xy = asset.data.root_lin_vel_w[:, :2]
+    vel_norm = torch.norm(vel_xy, dim=1, keepdim=True).clamp(min=1e-6)
+    vel_dir = vel_xy / vel_norm
+
+    # compute directional error
+    lin_vel_error = torch.sum(torch.square(cmd_dir - vel_dir), dim=1)
+
+    # exponential reward
+    return torch.exp(-lin_vel_error / std**2)
