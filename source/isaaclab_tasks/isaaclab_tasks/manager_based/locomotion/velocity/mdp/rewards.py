@@ -165,14 +165,20 @@ def steer_ang_vel_exp_2d(
     return torch.exp(-yaw_vel_error / std**2)
 
 def track_com_ang_vel_z_exp(
-    env: ManagerBasedRLEnv, std: float, command_name: str, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+    env: ManagerBasedRLEnv, std: float, std_2: float, command_name: str, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
 ) -> torch.Tensor:
     """Reward tracking of angular velocity commands (yaw) using exponential kernel."""
     # extract the used quantities (to enable type-hinting)
     asset: Articulation = env.scene[asset_cfg.name]
-    # compute the error
-    ang_vel_error = torch.square(env.command_manager.get_command(command_name)[:, 2] - asset.data.root_com_ang_vel_b[:, 2])
-    return torch.exp(-ang_vel_error / std**2)
+    #ang_vel_error = torch.square(env.command_manager.get_command(command_name)[:, -1] - asset.data.root_com_ang_vel_b[:, -1])
+    cmd = env.command_manager.get_command(command_name)[:, -1]
+    val = asset.data.root_com_ang_vel_b[:, -1]
+    ang_vel_error = torch.square(cmd - val)
+    reward = torch.exp(-ang_vel_error / std**2)
+    excess_reward = torch.exp(-ang_vel_error / std_2**2)
+    condition = torch.abs(cmd) < torch.abs(val)
+    reward = torch.where(condition, excess_reward, reward)
+    return reward
 
 def lin_vel_w_z_l2(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
     """Penalize z-axis world frame linear velocity using L2 squared kernel."""
