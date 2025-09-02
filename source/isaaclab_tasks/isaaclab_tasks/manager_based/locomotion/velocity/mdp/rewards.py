@@ -213,12 +213,13 @@ def shake_rolling_penalty(
     """Reward tracking of angular velocity commands (yaw) using exponential kernel."""
     # extract the used quantities (to enable type-hinting)
     asset: RigidObject = env.scene[asset_cfg.name]
-    _command = env.command_manager.get_command(command_name)[:, 0]
-    _root_ang_vel_b = asset.data.root_com_ang_vel_b[:, 2]
+    _command = env.command_manager.get_command(command_name)[:, -1]
+    _root_ang_vel_b = asset.data.root_com_ang_vel_b[:, -1]
     same_sign = torch.sign(_command) == torch.sign(_root_ang_vel_b)
     # compute the error
     shake_rolling_error = torch.zeros(_command.shape[0], device=_command.device)
-    return torch.where(same_sign, shake_rolling_error, torch.exp(scale * torch.abs(_root_ang_vel_b)))
+    penalty = torch.where(same_sign, shake_rolling_error, torch.exp(scale * torch.abs(_root_ang_vel_b)))
+    return torch.clamp(penalty, max=1.0)
 
 def ang_acc_w_z_l2(env: ManagerBasedRLEnv, target_body: str, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
     """Penalize z-axis world frame linear velocity using L2 squared kernel."""
