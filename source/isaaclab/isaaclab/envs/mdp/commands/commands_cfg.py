@@ -407,11 +407,14 @@ class UniformWorldVelocityCommandCfg(CommandTermCfg):
     class Ranges:
         """Uniform distribution ranges for the velocity commands."""
 
-        lin_vel_x: tuple[float, float] = MISSING
+        #lin_vel_x: tuple[float, float] = MISSING
         """Range for the linear-x velocity command (in m/s)."""
 
-        lin_vel_y: tuple[float, float] = MISSING
+        #lin_vel_y: tuple[float, float] = MISSING
         """Range for the linear-y velocity command (in m/s)."""
+
+        rolling_speed: tuple[float, float] = MISSING
+        """Range for the rolling speed command (in rad/s)."""
 
     ranges: Ranges = MISSING
     """Distribution ranges for the velocity commands."""

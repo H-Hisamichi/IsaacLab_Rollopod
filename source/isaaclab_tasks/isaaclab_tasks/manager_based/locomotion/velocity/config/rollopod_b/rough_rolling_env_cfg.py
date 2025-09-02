@@ -78,7 +78,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             rel_standing_envs=0.02,
             debug_vis=False,
             ranges=mdp.UniformWorldVelocityCommandCfg.Ranges(
-                lin_vel_x=(-2.78, 2.78), lin_vel_y=(-2.78, 2.78),
+                rolling_speed=(-3.0, 3.0),
             ),
         )
 
@@ -86,9 +86,9 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             asset_name="robot",
             joint_names=[".*"],
             scale={
-                ".*RevoluteJoint1": 0.25,
-                ".*RevoluteJoint2": 0.2,
-                ".*RevoluteJoint3": 0.2,
+                ".*RevoluteJoint1": 0.3,
+                ".*RevoluteJoint2": 0.3,
+                ".*RevoluteJoint3": 0.3,
             },
             use_default_offset=True
         )

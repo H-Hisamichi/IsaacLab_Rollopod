@@ -96,15 +96,17 @@ class UniformWorldVelocityCommand(CommandTerm):
     def _resample_command(self, env_ids: Sequence[int]):
         # sample velocity commands
         r = torch.empty(len(env_ids), device=self.device)
+        theta = r.uniform_(0.0, 2 * torch.pi, size=(len(env_ids),), device=self.device)
         # -- linear velocity - x direction
-        self.vel_command_b[env_ids, 0] = r.uniform_(*self.cfg.ranges.lin_vel_x)
+        self.vel_command_b[env_ids, 0] = torch.cos(theta)
         # -- linear velocity - y direction
-        self.vel_command_b[env_ids, 1] = r.uniform_(*self.cfg.ranges.lin_vel_y)
+        self.vel_command_b[env_ids, 1] = torch.sin(theta)
         # -- angular velocity - z direction
-        self.vel_command_b[env_ids, 2] = (
-            torch.norm(self.vel_command_b[env_ids, :2], dim=1) / self.cfg.robot_radius
-            ) *(torch.randint(0, 2, (len(env_ids),), device=self.vel_command_b.device) * 2 - 1
-        )
+        self.vel_command_b[env_ids, 2] = r.uniform_(*self.cfg.ranges.rolling_speed)
+        #self.vel_command_b[env_ids, 2] = (
+        #    torch.norm(self.vel_command_b[env_ids, :2], dim=1) / self.cfg.robot_radius
+        #    ) *(torch.randint(0, 2, (len(env_ids),), device=self.vel_command_b.device) * 2 - 1
+        #)
         
         # update standing envs
         self.is_standing_env[env_ids] = r.uniform_(0.0, 1.0) <= self.cfg.rel_standing_envs
