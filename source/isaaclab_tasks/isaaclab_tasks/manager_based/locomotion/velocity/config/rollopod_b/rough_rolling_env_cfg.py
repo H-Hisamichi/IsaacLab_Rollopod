@@ -125,7 +125,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             "torque_range": (-0.0, 0.0),
         }
         self.events.reset_base.params = {
-            "pose_range": {"pitch": (-3.14, 3.14)}, # def: (-3.14, 3.14)
+            "pose_range": {"yaw": (-3.14, 3.14)}, # def: (-3.14, 3.14)
             "velocity_range": {
                 "x": (0.0, 0.0),
                 "y": (0.0, 0.0),
