@@ -238,6 +238,12 @@ def rolling_slip_penalty(env: ManagerBasedRLEnv, scale: float, rolling_radius: f
     current_lin_vel = torch.norm(asset.data.root_com_lin_vel_b[:, :2], dim=1)
     return torch.exp(scale * torch.abs(target_lin_val - current_lin_vel))
 
+def lin_vel_z_penalty(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
+    """Penalize z-axis world frame linear velocity using L2 squared kernel."""
+    # extract the used quantities (to enable type-hinting)
+    asset: Articulation = env.scene[asset_cfg.name]
+    return torch.square(asset.data.root_com_lin_vel_b[:, 2])
+
 def rolling_slip_penalty_v2(
     env: ManagerBasedRLEnv, scale: float, rolling_radius: float, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
 ) -> torch.Tensor:
