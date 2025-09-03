@@ -33,7 +33,7 @@ class RollopodRewards(RewardsCfg):
     lin_vel_w_z_l2 = RewTerm(func=mdp.lin_vel_w_z_l2, weight=-0.5)
     #rolling_ang_vel = RewTerm(func=mdp.rolling_ang_vel, weight=0.1, params={"command_name": "base_velocity"})
     track_lin_vel_xy_w_exp = RewTerm(
-        func=mdp.track_lin_vel_dir_xy_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
+        func=mdp.track_lin_vel_dir_xy_exp, weight=0.8, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
     )
     #track_lin_vel_xy_w_exp_fine_grained = RewTerm(
     #    func=mdp.track_lin_vel_xy_w_exp, weight=0.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
@@ -47,9 +47,9 @@ class RollopodRewards(RewardsCfg):
     # -- optional penalties
     flat_orientation_l2 = None
     flat_z_orientation_l2 = RewTerm(func=mdp.flat_z_orientation_l2, weight=0.0)
-    #shake_rolling_penalty = RewTerm(
-    #    func=mdp.shake_rolling_penalty, weight=-0.0, params={"command_name": "base_velocity", "scale": 0.5}
-    #)
+    shake_rolling_penalty = RewTerm(
+        func=mdp.shake_rolling_penalty, weight=-0.5, params={"command_name": "base_velocity", "scale": 0.4}
+    )
     rolling_slip_penalty = RewTerm(
         func=mdp.rolling_slip_penalty, weight=-0.1, params={"command_name": "base_velocity", "scale": 0.5, "rolling_radius": 0.33}
     )
@@ -78,7 +78,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             rel_standing_envs=0.02,
             debug_vis=False,
             ranges=mdp.UniformWorldVelocityCommandCfg.Ranges(
-                rolling_speed=(-8.46, 8.46),
+                rolling_speed=(-8.46, 8.46), heading=(-math.pi, math.pi)
             ),
         )
 
@@ -101,6 +101,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         #    func=mdp.base_com_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2)
         #)
         self.observations.policy.height_scan = None
+        self.observations.policy.base_lin_vel.func = mdp.root_lin_vel_w
 
         self.events.physics_material.params = {
             "asset_cfg": SceneEntityCfg("robot", body_names=".*"),
@@ -145,7 +146,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
 
         self.terminations.base_contact.params = {"sensor_cfg": SceneEntityCfg("contact_forces", body_names="MainBody"), "threshold": 1.0}
 
-        self.curriculum.terrain_levels.func = mdp.terrain_levels_vel_rollopod
+        #self.curriculum.terrain_levels.func = mdp.terrain_levels_vel_rollopod
 
         
 

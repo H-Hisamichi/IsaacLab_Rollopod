@@ -85,9 +85,12 @@ class UniformWorldVelocityCommand(CommandTerm):
         # time for which the command was executed
         max_command_time = self.cfg.resampling_time_range[1]
         max_command_step = max_command_time / self._env.step_dt
+        vel_xy = self.robot.data.root_com_lin_vel_w[:, :2]
+        vel_norm = torch.norm(vel_xy, dim=1, keepdim=True).clamp(min=1e-6)
+        vel_dir = vel_xy / vel_norm
         # logs data
         self.metrics["error_vel_xy"] += (
-            torch.norm(self.vel_command_b[:, :2] - self.robot.data.root_lin_vel_w[:, :2], dim=-1) / max_command_step
+            torch.sum(torch.abs(self.vel_command_b[:, :2] - vel_dir), dim=-1) / max_command_step
         )
         self.metrics["error_ang_z"] += (
             (self.vel_command_b[:, -1] - self.robot.data.root_ang_vel_b[:, -1]) / max_command_step
@@ -96,7 +99,7 @@ class UniformWorldVelocityCommand(CommandTerm):
     def _resample_command(self, env_ids: Sequence[int]):
         # sample velocity commands
         r = torch.empty(len(env_ids), device=self.device)
-        theta = r.uniform_(0.0, 2 * torch.pi, size=(len(env_ids),), device=self.device)
+        theta = r.uniform_(*self.cfg.ranges.heading)
         # -- linear velocity - x direction
         self.vel_command_b[env_ids, 0] = torch.cos(theta)
         # -- linear velocity - y direction

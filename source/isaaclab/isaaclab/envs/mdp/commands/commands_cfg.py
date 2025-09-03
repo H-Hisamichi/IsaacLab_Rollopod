@@ -416,6 +416,9 @@ class UniformWorldVelocityCommandCfg(CommandTermCfg):
         rolling_speed: tuple[float, float] = MISSING
         """Range for the rolling speed command (in rad/s)."""
 
+        heading: tuple[float, float] | None = None
+        """Range for the heading command (in rad). Defaults to None."""
+
     ranges: Ranges = MISSING
     """Distribution ranges for the velocity commands."""
 
