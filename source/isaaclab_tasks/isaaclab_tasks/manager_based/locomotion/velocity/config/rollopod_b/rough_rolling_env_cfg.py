@@ -101,7 +101,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         #    func=mdp.base_com_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2)
         #)
         self.observations.policy.height_scan = None
-        self.observations.policy.base_lin_vel.func = mdp.root_lin_vel_w
+        #self.observations.policy.base_lin_vel.func = mdp.root_lin_vel_w
 
         self.events.physics_material.params = {
             "asset_cfg": SceneEntityCfg("robot", body_names=".*"),
