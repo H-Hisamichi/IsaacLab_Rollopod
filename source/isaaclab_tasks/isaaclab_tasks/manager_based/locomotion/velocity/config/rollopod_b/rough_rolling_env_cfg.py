@@ -30,7 +30,7 @@ class RollopodRewards(RewardsCfg):
     feet_air_time = None
     undesired_contacts = None
     lin_vel_z_l2 = None
-    lin_vel_w_z_l2 = RewTerm(func=mdp.lin_vel_w_z_l2, weight=-0.5)
+    lin_vel_w_z_l2 = RewTerm(func=mdp.lin_vel_w_z_l2, weight=-0.6)
     #rolling_ang_vel = RewTerm(func=mdp.rolling_ang_vel, weight=0.1, params={"command_name": "base_velocity"})
     track_lin_vel_xy_w_exp = RewTerm(
         func=mdp.track_lin_vel_dir_xy_exp, weight=0.5, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
@@ -46,7 +46,7 @@ class RollopodRewards(RewardsCfg):
     )
     # -- optional penalties
     flat_orientation_l2 = None
-    flat_z_orientation_l2 = RewTerm(func=mdp.flat_z_orientation_l2, weight=-0.25)
+    #flat_z_orientation_l2 = RewTerm(func=mdp.flat_z_orientation_l2, weight=-0.25)
     shake_rolling_penalty = RewTerm(
         func=mdp.shake_rolling_penalty, weight=-0.5, params={"command_name": "base_velocity", "scale": 0.4}
     )
