@@ -61,15 +61,15 @@ class RollopodRewards(RewardsCfg):
     #shake_rolling_penalty = RewTerm(func=mdp.ang_acc_w_z_l2, weight=-0.0001, params={"target_body": "MainBody"})
     lin_vel_z_penalty = RewTerm(func=mdp.lin_vel_z_penalty, weight=-0.5)
 
-@configclass
-class RollopodObservations(ObservationsCfg):
-    """Observation specifications for the MDP."""
-    @configclass
-    class RollopodPolicyCfg(ObservationsCfg.PolicyCfg):
-        """Observations for policy group."""
-        root_lin_vel_w = ObsTerm(func=mdp.root_lin_vel_w, noise=Unoise(n_min=-0.1, n_max=0.1))
+#@configclass
+#class RollopodObservations(ObservationsCfg):
+#    """Observation specifications for the MDP."""
+#    @configclass
+#    class RollopodPolicyCfg(ObservationsCfg.PolicyCfg):
+#        """Observations for policy group."""
+#        root_lin_vel_w = ObsTerm(func=mdp.root_lin_vel_w, noise=Unoise(n_min=-0.1, n_max=0.1))
     
-    policy: RollopodPolicyCfg = RollopodPolicyCfg()
+#    policy: RollopodPolicyCfg = RollopodPolicyCfg()
 
 @configclass
 class RollopodCurriculums(CurriculumCfg):
@@ -78,7 +78,7 @@ class RollopodCurriculums(CurriculumCfg):
 
 @configclass
 class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
-    observations: RollopodObservations = RollopodObservations()
+    #observations: RollopodObservations = RollopodObservations()
     rewards: RollopodRewards = RollopodRewards()
     curriculum: RollopodCurriculums = RollopodCurriculums()
 

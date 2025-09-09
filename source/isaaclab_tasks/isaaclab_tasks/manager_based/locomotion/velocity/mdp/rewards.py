@@ -296,7 +296,7 @@ def track_lin_vel_dir_xy_exp(
     cmd_dir = env.command_manager.get_command(command_name)[:, :2]
 
     # actual velocity direction (normalize to unit vector, avoid div-by-zero)
-    vel_xy = asset.data.root_com_lin_vel_w[:, :2]
+    vel_xy = asset.data.root_com_lin_vel_b[:, :2]
     vel_norm = torch.norm(vel_xy, dim=1, keepdim=True).clamp(min=1e-6)
     vel_dir = vel_xy / vel_norm
 

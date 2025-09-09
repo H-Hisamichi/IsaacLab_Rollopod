@@ -15,6 +15,7 @@ import isaaclab.utils.math as math_utils
 from isaaclab.assets import Articulation
 from isaaclab.managers import CommandTerm
 from isaaclab.markers import VisualizationMarkers
+from isaaclab.utils.math import quat_apply, quat_conjugate
 
 if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedEnv, ManagerBasedRLEnv
@@ -49,7 +50,8 @@ class UniformWorldVelocityCommand(CommandTerm):
 
         # crete buffers to store the command
         # -- command: x vel, y vel, yaw vel
-        self.vel_command_b = torch.zeros(self.num_envs, 3, device=self.device)
+        self.vel_command_w = torch.zeros(self.num_envs, 3, device=self.device)
+        self.vel_command_b = torch.zeros(self.num_envs, 4, device=self.device)
         #self.heading_target = torch.zeros(self.num_envs, device=self.device)
         self.is_heading_env = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
         self.is_standing_env = torch.zeros_like(self.is_heading_env)
@@ -90,10 +92,10 @@ class UniformWorldVelocityCommand(CommandTerm):
         vel_dir = vel_xy / vel_norm
         # logs data
         self.metrics["error_vel_xy"] += (
-            torch.sum(torch.abs(self.vel_command_b[:, :2] - vel_dir), dim=-1) / max_command_step
+            torch.sum(torch.abs(self.vel_command_w[:, :2] - vel_dir), dim=-1) / max_command_step
         )
         self.metrics["error_ang_z"] += (
-            (self.vel_command_b[:, -1] - self.robot.data.root_ang_vel_b[:, -1]) / max_command_step
+            (self.vel_command_w[:, -1] - self.robot.data.root_ang_vel_b[:, -1]) / max_command_step
         )
 
     def _resample_command(self, env_ids: Sequence[int]):
@@ -101,11 +103,11 @@ class UniformWorldVelocityCommand(CommandTerm):
         r = torch.empty(len(env_ids), device=self.device)
         theta = r.uniform_(*self.cfg.ranges.heading)
         # -- linear velocity - x direction
-        self.vel_command_b[env_ids, 0] = torch.cos(theta)
+        self.vel_command_w[env_ids, 0] = torch.cos(theta)
         # -- linear velocity - y direction
-        self.vel_command_b[env_ids, 1] = torch.sin(theta)
+        self.vel_command_w[env_ids, 1] = torch.sin(theta)
         # -- angular velocity - z direction
-        self.vel_command_b[env_ids, 2] = r.uniform_(*self.cfg.ranges.rolling_speed)
+        self.vel_command_w[env_ids, 2] = r.uniform_(*self.cfg.ranges.rolling_speed)
         #self.vel_command_b[env_ids, 2] = (
         #    torch.norm(self.vel_command_b[env_ids, :2], dim=1) / self.cfg.robot_radius
         #    ) *(torch.randint(0, 2, (len(env_ids),), device=self.vel_command_b.device) * 2 - 1
@@ -115,11 +117,17 @@ class UniformWorldVelocityCommand(CommandTerm):
         self.is_standing_env[env_ids] = r.uniform_(0.0, 1.0) <= self.cfg.rel_standing_envs
 
     def _update_command(self):
-        
+        root_quat_w = self.robot.data.root_link_quat_w
+        vel_command_w_3d = self.vel_command_w.clone()
+        vel_command_w_3d[:, 2] = 0.0
+        root_quat_inv = quat_conjugate(root_quat_w)
+        v_l_3d = quat_apply(root_quat_inv, vel_command_w_3d)
+        self.vel_command_b[:, 0:3] = v_l_3d
+        self.vel_command_b[:, -1] = self.vel_command_w[:, -1]
         # Enforce standing (i.e., zero velocity command) for standing envs
         # TODO: check if conversion is needed
         standing_env_ids = self.is_standing_env.nonzero(as_tuple=False).flatten()
-        self.vel_command_b[standing_env_ids, :] = 0.0
+        self.vel_command_w[standing_env_ids, :] = 0.0
 
     def _set_debug_vis_impl(self, debug_vis: bool):
         # set visibility of markers
