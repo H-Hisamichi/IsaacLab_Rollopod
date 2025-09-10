@@ -156,8 +156,13 @@ class UniformWorldVelocityCommand(CommandTerm):
         # -- base state
         base_pos_w = self.robot.data.root_pos_w.clone()
         base_pos_w[:, 2] += 0.5
+        # compute goal xy velocity from unit vector and wheel angular speed
+        direction = self.command[:, :2]
+        wheel_radius = 0.33
+        linear_speed = self.command[:, -1] * wheel_radius
+        goal_xy_velocity = direction * linear_speed.unsqueeze(1)
         # -- resolve the scales and quaternions
-        vel_des_arrow_scale, vel_des_arrow_quat = self._resolve_xy_velocity_to_arrow(self.command[:, :2])
+        vel_des_arrow_scale, vel_des_arrow_quat = self._resolve_xy_velocity_to_arrow(goal_xy_velocity)
         vel_arrow_scale, vel_arrow_quat = self._resolve_xy_velocity_to_arrow(self.robot.data.root_lin_vel_b[:, :2])
         # display markers
         self.goal_vel_visualizer.visualize(base_pos_w, vel_des_arrow_quat, vel_des_arrow_scale)
