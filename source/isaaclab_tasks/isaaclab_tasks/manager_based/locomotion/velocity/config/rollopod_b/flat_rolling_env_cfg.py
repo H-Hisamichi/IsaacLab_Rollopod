@@ -34,3 +34,5 @@ class RollopodBFlatEnvCfg_PLAY(RollopodBFlatEnvCfg):
         # remove random pushing event
         self.events.base_external_force_torque = None
         self.events.push_robot = None
+
+        self.commands.base_velocity.debug_vis = True
