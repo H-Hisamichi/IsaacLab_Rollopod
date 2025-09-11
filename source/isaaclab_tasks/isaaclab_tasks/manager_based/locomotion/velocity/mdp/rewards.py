@@ -299,3 +299,17 @@ def track_lin_vel_dir_xy_exp(
 
     # exponential reward
     return torch.exp(-lin_vel_error / std**2)
+
+"""
+Position-tracking rewards.
+"""
+def track_pos_w_exp(
+    env: ManagerBasedRLEnv, std: float, command_name: str, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
+    """Reward tracking of position commands using exponential kernel."""
+    # extract the used quantities (to enable type-hinting)
+    asset: Articulation = env.scene[asset_cfg.name]
+    # compute the error
+    pos_error = torch.square(torch.norm(env.command_manager.get_command(command_name) - asset.data.root_com_pos_w, dim=1))
+    return torch.exp(-pos_error / std**2)
+

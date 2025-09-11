@@ -21,64 +21,44 @@ from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 from isaaclab_assets.robots.rollopod import ROLLOPOD_B_ROLLING_CFG  # isort: skip
 
 @configclass
-class RollopodRewards(RewardsCfg):
+class JumpingRewards(RewardsCfg):
     """Reward terms for the MDP."""
 
     track_lin_vel_xy_exp = None
     track_ang_vel_z_exp = None
-    ang_vel_xy_l2 = None
     feet_air_time = None
     undesired_contacts = None
     lin_vel_z_l2 = None
-    lin_vel_w_z_l2 = RewTerm(func=mdp.lin_vel_w_z_l2, weight=-0.5)
-    #rolling_ang_vel = RewTerm(func=mdp.rolling_ang_vel, weight=0.1, params={"command_name": "base_velocity"})
-    track_lin_vel_xy_w_exp = RewTerm(
-        func=mdp.track_lin_vel_dir_xy_exp, weight=0.8, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
+    track_pos_w_exp = RewTerm(
+        func=mdp.track_pos_w_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
     )
-    #track_lin_vel_xy_w_exp_fine_grained = RewTerm(
-    #    func=mdp.track_lin_vel_xy_w_exp, weight=0.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
-    #)
-    track_com_ang_vel_z_exp = RewTerm(
-        func=mdp.track_com_ang_vel_z_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25), "std_2": math.sqrt(1.5)}
-    )
-    #track_rolling_ang_vel_exp_fine_grained = RewTerm(
-    #    func=mdp.track_com_ang_vel_z_exp, weight=2.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
-    #)
     # -- optional penalties
-    flat_orientation_l2 = None
-    flat_z_orientation_l2 = RewTerm(func=mdp.flat_z_orientation_l2, weight=0.0)
-    shake_rolling_penalty = RewTerm(
-        func=mdp.shake_rolling_penalty, weight=-0.5, params={"command_name": "base_velocity", "scale": 0.4}
-    )
-    rolling_slip_penalty = RewTerm(
-        func=mdp.rolling_slip_penalty, weight=-0.1, params={"command_name": "base_velocity", "scale": 0.5, "rolling_radius": 0.33}
-    )
-    #shake_rolling_penalty = RewTerm(func=mdp.ang_acc_w_z_l2, weight=-0.0001, params={"target_body": "MainBody"})
 
 @configclass
-class RollopodCurriculums(CurriculumCfg):
+class JumpingCurriculums(CurriculumCfg):
     terrain_levels = CurrTerm(func=mdp.terrain_levels_vel)
 
 
 @configclass
 class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
-    rewards: RollopodRewards = RollopodRewards()
-    curriculum: RollopodCurriculums = RollopodCurriculums()
+    rewards: JumpingRewards = JumpingRewards()
+    curriculum: JumpingCurriculums = JumpingCurriculums()
 
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
         # switch robot to rollopod-b
         self.scene.robot = ROLLOPOD_B_ROLLING_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
-        self.scene.height_scanner = None
+        self.scene.height_scanner.offset = RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.0))
+        self.scene.height_scanner.pattern_cfg = patterns.GridPatternCfg(resolution=0.2, size=[1.0, 1.0])
 
-        self.commands.base_velocity = mdp.UniformWorldVelocityCommandCfg(
+        self.commands.base_velocity = mdp.JumpingCommandCfg(
             asset_name="robot",
             resampling_time_range=(10.0, 10.0),
             rel_standing_envs=0.02,
             debug_vis=False,
-            ranges=mdp.UniformWorldVelocityCommandCfg.Ranges(
-                rolling_speed=(-8.46, 8.46), heading=(-math.pi, math.pi)
+            ranges=mdp.JumpingCommandCfg.Ranges(
+                pos_x=(0.0, 0.0), pos_y=(0.0, 0.0), pos_z=(0.5, 1.5)
             ),
         )
 
@@ -87,8 +67,8 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             joint_names=[".*"],
             scale={
                 ".*RevoluteJoint1": 0.3,
-                ".*RevoluteJoint2": 0.3,
-                ".*RevoluteJoint3": 0.3,
+                ".*RevoluteJoint2": 0.5,
+                ".*RevoluteJoint3": 0.5,
             },
             use_default_offset=True
         )
@@ -143,6 +123,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.rewards.dof_torques_l2.weight = -1.0e-5
         self.rewards.dof_acc_l2.weight = -2.5e-7
         self.rewards.action_rate_l2.weight = -0.01
+        self.rewards.flat_orientation_l2.weight = -0.25
 
         self.terminations.base_contact.params = {"sensor_cfg": SceneEntityCfg("contact_forces", body_names="MainBody"), "threshold": 1.0}
 
