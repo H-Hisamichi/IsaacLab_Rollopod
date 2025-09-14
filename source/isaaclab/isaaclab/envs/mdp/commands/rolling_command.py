@@ -159,7 +159,7 @@ class UniformWorldVelocityCommand(CommandTerm):
         # compute goal xy velocity from unit vector and wheel angular speed
         direction = self.command[:, :2]
         wheel_radius = 0.33
-        linear_speed = self.command[:, -1] * wheel_radius
+        linear_speed = torch.abs(self.command[:, -1]) * wheel_radius
         goal_xy_velocity = direction * linear_speed.unsqueeze(1)
         # -- resolve the scales and quaternions
         vel_des_arrow_scale, vel_des_arrow_quat = self._resolve_xy_velocity_to_arrow(goal_xy_velocity)
