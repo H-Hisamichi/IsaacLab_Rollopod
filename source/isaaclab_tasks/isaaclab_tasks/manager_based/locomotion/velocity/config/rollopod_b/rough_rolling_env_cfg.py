@@ -73,7 +73,7 @@ class RollopodRewards(RewardsCfg):
 
 @configclass
 class RollopodCurriculums(CurriculumCfg):
-    terrain_levels = CurrTerm(func=mdp.terrain_levels_vel)
+    terrain_levels = CurrTerm(func=mdp.terrain_levels_vel_rollopod)
 
 
 @configclass
@@ -86,8 +86,10 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         # post init of parent
         super().__post_init__()
         # switch robot to rollopod-b
+        # scene
         self.scene.robot = ROLLOPOD_B_ROLLING_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
-        self.scene.height_scanner = None
+        self.scene.height_scanner.offset = RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.25))
+        self.scene.height_scanner.pattern_cfg = patterns.GridPatternCfg(resolution=0.2, size=[2.0, 1.0])
 
         self.commands.base_velocity = mdp.UniformWorldVelocityCommandCfg(
             asset_name="robot",
@@ -117,7 +119,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         #self.observations.policy.base_ang_vel = ObsTerm(
         #    func=mdp.base_com_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2)
         #)
-        self.observations.policy.height_scan = None
+        #self.observations.policy.height_scan = None
         #self.observations.policy.base_lin_vel.func = mdp.root_lin_vel_w
 
         self.events.physics_material.params = {
@@ -193,3 +195,4 @@ class RollopodBRoughEnvCfg_PLAY(RollopodBRoughEnvCfg):
         self.events.push_robot = None
 
         self.commands.base_velocity.debug_vis = True
+        self.scene.height_scanner.debug_vis = True

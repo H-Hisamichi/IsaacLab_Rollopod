@@ -78,10 +78,9 @@ def terrain_levels_vel_rollopod(
     # robots that walked far enough progress to harder terrains
     move_up = distance > terrain.cfg.terrain_generator.size[0] / 2
     # robots that walked less than half of their required distance go to simpler terrains
-    move_down = distance < (torch.abs(command[env_ids, 0]) * env.max_episode_length_s * 0.5)
+    move_down = distance < torch.norm(command[env_ids, :2], dim=1) * 10 * 0.5
     move_down *= ~move_up
     # update terrain levels
     terrain.update_env_origins(env_ids, move_up, move_down)
     # return the mean terrain level
     return torch.mean(terrain.terrain_levels.float())
-    
