@@ -8,14 +8,14 @@ from dataclasses import MISSING
 
 from isaaclab.managers import CommandTermCfg
 from isaaclab.markers import VisualizationMarkersCfg
-from isaaclab.markers.config import BLUE_ARROW_X_MARKER_CFG, FRAME_MARKER_CFG, GREEN_ARROW_X_MARKER_CFG
+from isaaclab.markers.config import BLUE_ARROW_X_MARKER_CFG, FRAME_MARKER_CFG, GREEN_ARROW_X_MARKER_CFG, SPHERE_MARKER_CFG
 from isaaclab.utils import configclass
 
 from .null_command import NullCommand
 from .pose_2d_command import TerrainBasedPose2dCommand, UniformPose2dCommand
 from .pose_command import UniformPoseCommand
 from .velocity_command import NormalVelocityCommand, UniformVelocityCommand
-from .rolling_command import CamberAngleANDRollingVelocityCommand, CamberAngleANDRollingAngularVelocityCommand, UniformWorldVelocityCommand
+from .rolling_command import CamberAngleANDRollingVelocityCommand, CamberAngleANDRollingAngularVelocityCommand, UniformWorldVelocityCommand, UniformPosition2dCommand
 
 
 @configclass
@@ -435,3 +435,31 @@ class UniformWorldVelocityCommandCfg(CommandTermCfg):
     # Set the scale of the visualization markers to (0.5, 0.5, 0.5)
     goal_vel_visualizer_cfg.markers["arrow"].scale = (0.5, 0.5, 0.5)
     current_vel_visualizer_cfg.markers["arrow"].scale = (0.5, 0.5, 0.5)
+
+@configclass
+class UniformPosition2dCommandCfg(CommandTermCfg):
+    """Configuration for the uniform 2D-pose command generator."""
+
+    class_type: type = UniformPosition2dCommand
+
+    asset_name: str = MISSING
+    """Name of the asset in the environment for which the commands are generated."""
+
+    @configclass
+    class Ranges:
+        """Uniform distribution ranges for the position commands."""
+
+        pos_x: tuple[float, float] = MISSING
+        """Range for the x position (in m)."""
+
+        pos_y: tuple[float, float] = MISSING
+        """Range for the y position (in m)."""
+
+
+    ranges: Ranges = MISSING
+    """Distribution ranges for the position commands."""
+
+    goal_pose_visualizer_cfg: VisualizationMarkersCfg = SPHERE_MARKER_CFG.replace(
+        prim_path="/Visuals/Command/pose_goal"
+    )
+    """The configuration for the goal pose visualization marker. Defaults to GREEN_ARROW_X_MARKER_CFG."""

@@ -20,7 +20,14 @@ from isaaclab.utils.math import quat_apply, quat_conjugate
 if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedEnv, ManagerBasedRLEnv
 
-    from .commands_cfg import NormalVelocityCommandCfg, UniformVelocityCommandCfg, CamberAngleANDRollingVelocityCommandCfg, CamberAngleANDRollingAngularVelocityCommandCfg, UniformWorldVelocityCommandCfg
+    from .commands_cfg import (
+        NormalVelocityCommandCfg,
+        UniformVelocityCommandCfg,
+        CamberAngleANDRollingVelocityCommandCfg,
+        CamberAngleANDRollingAngularVelocityCommandCfg,
+        UniformWorldVelocityCommandCfg,
+        UniformPosition2dCommandCfg
+    )
 
 
 class UniformWorldVelocityCommand(CommandTerm):
@@ -569,4 +576,92 @@ class CamberAngleANDRollingVelocityCommand(CommandTerm):
         # display markers
         self.goal_vel_visualizer.visualize(base_pos_w, vel_des_arrow_quat, vel_des_arrow_scale)
         self.current_vel_visualizer.visualize(base_pos_w, vel_arrow_quat, vel_arrow_scale)
+
+class UniformPosition2dCommand(CommandTerm):
+    """Command generator that generates pose commands containing a 3-D position and heading.
+
+    The command generator samples uniform 2D positions around the environment origin. It sets
+    the height of the position command to the default root height of the robot. The heading
+    command is either set to point towards the target or is sampled uniformly.
+    This can be configured through the :attr:`Pose2dCommandCfg.simple_heading` parameter in
+    the configuration.
+    """
+
+    cfg: UniformPosition2dCommandCfg
+    """Configuration for the command generator."""
+
+    def __init__(self, cfg: UniformPosition2dCommandCfg, env: ManagerBasedEnv):
+        """Initialize the command generator class.
+
+        Args:
+            cfg: The configuration parameters for the command generator.
+            env: The environment object.
+        """
+        # initialize the base class
+        super().__init__(cfg, env)
+
+        # obtain the robot and terrain assets
+        # -- robot
+        self.robot: Articulation = env.scene[cfg.asset_name]
+
+        # crete buffers to store the command
+        # -- commands: (x, y, z, heading)
+        self.pos_command_w = torch.zeros(self.num_envs, 3, device=self.device)
+        self.pos_command_b = torch.zeros_like(self.pos_command_w)
+        # -- metrics
+        self.metrics["error_pos"] = torch.zeros(self.num_envs, device=self.device)
+
+    def __str__(self) -> str:
+        msg = "PositionCommand:\n"
+        msg += f"\tCommand dimension: {tuple(self.command.shape[1:])}\n"
+        msg += f"\tResampling time range: {self.cfg.resampling_time_range}"
+        return msg
+
+    """
+    Properties
+    """
+
+    @property
+    def command(self) -> torch.Tensor:
+        """The desired 2D-pose in base frame. Shape is (num_envs, 3)."""
+        return self.pos_command_b
+
+    """
+    Implementation specific functions.
+    """
+
+    def _update_metrics(self):
+        # logs data
+        self.metrics["error_pos_2d"] = torch.norm(self.pos_command_w[:, :2] - self.robot.data.root_pos_w[:, :2], dim=1)
+
+    def _resample_command(self, env_ids: Sequence[int]):
+        # obtain env origins for the environments
+        self.pos_command_w[env_ids] = self._env.scene.env_origins[env_ids]
+        # offset the position command by the current root position
+        r = torch.empty(len(env_ids), device=self.device)
+        self.pos_command_w[env_ids, 0] += r.uniform_(*self.cfg.ranges.pos_x)
+        self.pos_command_w[env_ids, 1] += r.uniform_(*self.cfg.ranges.pos_y)
+        self.pos_command_w[env_ids, 2] += self.robot.data.default_root_state[env_ids, 2]
+
+    def _update_command(self):
+        """Re-target the position command to the current root state."""
+        target_vec = self.pos_command_w - self.robot.data.root_pos_w[:, :3]
+        self.pos_command_b[:] = quat_apply_inverse(yaw_quat(self.robot.data.root_quat_w), target_vec)
+
+    def _set_debug_vis_impl(self, debug_vis: bool):
+        # create markers if necessary for the first time
+        if debug_vis:
+            if not hasattr(self, "goal_pose_visualizer"):
+                self.goal_pose_visualizer = VisualizationMarkers(self.cfg.goal_pose_visualizer_cfg)
+            # set their visibility to true
+            self.goal_pose_visualizer.set_visibility(True)
+        else:
+            if hasattr(self, "goal_pose_visualizer"):
+                self.goal_pose_visualizer.set_visibility(False)
+
+    def _debug_vis_callback(self, event):
+        # update the box marker
+        self.goal_pose_visualizer.visualize(
+            translations=self.pos_command_w,
+        )
 
