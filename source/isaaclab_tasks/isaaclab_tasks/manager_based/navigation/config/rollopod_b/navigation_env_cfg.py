@@ -46,7 +46,7 @@ class EventCfg:
 class ActionsCfg:
     """Action terms for the MDP."""
 
-    pre_trained_policy_action: mdp.PreTrainedPolicyActionCfg = mdp.PreTrainedPolicyActionCfg(
+    pre_trained_policy_action: mdp.PreTrainedRollingPolicyActionCfg = mdp.PreTrainedRollingPolicyActionCfg(
         asset_name="robot",
         policy_path=f"/home/robot/IsaacLab_v2.2.0/IsaacLab/logs/rsl_rl/rollopod_b_flat/2025-09-11_18-56-19/exported/policy.pt",
         low_level_decimation=4,
@@ -64,9 +64,10 @@ class ObservationsCfg:
         """Observations for policy group."""
 
         # observation terms (order preserved)
-        base_lin_vel = ObsTerm(func=mdp.base_lin_vel)
+        base_com_lin_vel_w = ObsTerm(func=mdp.base_com_lin_vel_w)
         projected_gravity = ObsTerm(func=mdp.projected_gravity)
         pose_command = ObsTerm(func=mdp.generated_commands, params={"command_name": "pose_command"})
+        #actions = ObsTerm(func=mdp.last_action, params={"action_name": "pre_trained_policy_action"})
 
     # observation groups
     policy: PolicyCfg = PolicyCfg()
@@ -79,14 +80,17 @@ class RewardsCfg:
     termination_penalty = RewTerm(func=mdp.is_terminated, weight=-400.0)
     position_tracking = RewTerm(
         func=mdp.position_command_error_tanh,
-        weight=0.5,
+        weight=1.0,
         params={"std": 2.0, "command_name": "pose_command"},
     )
     position_tracking_fine_grained = RewTerm(
         func=mdp.position_command_error_tanh,
-        weight=0.5,
+        weight=1.0,
         params={"std": 0.2, "command_name": "pose_command"},
     )
+    #non_unit_vector_penalty = RewTerm(
+    #    func=mdp.non_unit_vector_penalty, weight=-0.5, params={"action_name": "pre_trained_policy_action"}
+    #)
 
 
 @configclass
@@ -95,7 +99,6 @@ class CommandsCfg:
 
     pose_command = mdp.UniformPosition2dCommandCfg(
         asset_name="robot",
-        simple_heading=False,
         resampling_time_range=(8.0, 8.0),
         debug_vis=False,
         ranges=mdp.UniformPosition2dCommandCfg.Ranges(pos_x=(-10.0, 10.0), pos_y=(-10.0, 10.0)),
@@ -154,3 +157,4 @@ class NavigationEnvCfg_PLAY(NavigationEnvCfg):
         # disable randomization for play
         self.observations.policy.enable_corruption = False
         self.commands.pose_command.debug_vis = True
+        self.actions.pre_trained_policy_action.debug_vis = False

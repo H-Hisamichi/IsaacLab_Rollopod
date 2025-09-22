@@ -19,6 +19,7 @@ from isaaclab.managers import SceneEntityCfg
 from isaaclab.managers import TraveledDistanceRecorder
 import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
+from isaaclab.sensors import ContactSensorCfg, RayCasterCfg, patterns
 
 ##
 # Pre-defined configs
@@ -89,7 +90,8 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         # scene
         self.scene.robot = ROLLOPOD_B_ROLLING_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         self.scene.height_scanner.offset = RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.25))
-        self.scene.height_scanner.pattern_cfg = patterns.GridPatternCfg(resolution=0.2, size=[2.0, 1.0])
+        self.scene.height_scanner.ray_alignment = "base"
+        self.scene.height_scanner.pattern_cfg = patterns.GridPatternCfg(resolution=0.2, size=[2.0, 0.6])
 
         self.commands.base_velocity = mdp.UniformWorldVelocityCommandCfg(
             asset_name="robot",

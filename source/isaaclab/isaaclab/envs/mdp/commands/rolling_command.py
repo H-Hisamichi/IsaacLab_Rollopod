@@ -15,7 +15,14 @@ import isaaclab.utils.math as math_utils
 from isaaclab.assets import Articulation
 from isaaclab.managers import CommandTerm
 from isaaclab.markers import VisualizationMarkers
-from isaaclab.utils.math import quat_apply, quat_conjugate
+from isaaclab.utils.math import (
+    quat_apply,
+    quat_conjugate,
+    quat_apply_inverse,
+    quat_from_euler_xyz,
+    wrap_to_pi,
+    yaw_quat
+)
 
 if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedEnv, ManagerBasedRLEnv
@@ -607,7 +614,7 @@ class UniformPosition2dCommand(CommandTerm):
         # crete buffers to store the command
         # -- commands: (x, y, z, heading)
         self.pos_command_w = torch.zeros(self.num_envs, 3, device=self.device)
-        self.pos_command_b = torch.zeros_like(self.pos_command_w)
+        self.pos_command_upd = torch.zeros_like(self.pos_command_w)
         # -- metrics
         self.metrics["error_pos"] = torch.zeros(self.num_envs, device=self.device)
 
@@ -624,7 +631,7 @@ class UniformPosition2dCommand(CommandTerm):
     @property
     def command(self) -> torch.Tensor:
         """The desired 2D-pose in base frame. Shape is (num_envs, 3)."""
-        return self.pos_command_b
+        return self.pos_command_upd
 
     """
     Implementation specific functions.
@@ -646,7 +653,8 @@ class UniformPosition2dCommand(CommandTerm):
     def _update_command(self):
         """Re-target the position command to the current root state."""
         target_vec = self.pos_command_w - self.robot.data.root_pos_w[:, :3]
-        self.pos_command_b[:] = quat_apply_inverse(yaw_quat(self.robot.data.root_quat_w), target_vec)
+        self.pos_command_upd[:] = target_vec
+        #self.pos_command_b[:] = quat_apply_inverse(yaw_quat(self.robot.data.root_quat_w), target_vec)
 
     def _set_debug_vis_impl(self, debug_vis: bool):
         # create markers if necessary for the first time
