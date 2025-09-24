@@ -34,7 +34,7 @@ def heading_command_error_abs(env: ManagerBasedRLEnv, command_name: str) -> torc
     return heading_b.abs()
 
 def non_unit_vector_penalty(env: ManagerBasedRLEnv, action_name: str) -> torch.Tensor:
-    """Penalize tracking orientation error."""
+    """Penalize tracking unit vector error."""
     action = env.action_manager.get_term(action_name).raw_actions
     vec_norm = torch.norm(action[:, :3], dim=1)
     return torch.square(vec_norm - 1.0)

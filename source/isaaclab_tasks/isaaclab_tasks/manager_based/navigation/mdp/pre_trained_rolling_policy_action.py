@@ -88,11 +88,11 @@ class PreTrainedRollingPolicyAction(ActionTerm):
     """
 
     def process_actions(self, actions: torch.Tensor):
-        #xyz = actions[:, :3]
-        #norm = torch.norm(xyz, dim=1, keepdim=True) + 1e-8
-        #xyz_normalized = xyz / norm
-        #action_normalized = torch.cat([xyz_normalized, actions[:, 3:]], dim=1)
-        self._raw_actions[:] = actions
+        xyz = actions[:, :3]
+        norm = torch.norm(xyz, dim=1, keepdim=True) + 1e-8
+        xyz_normalized = xyz / norm
+        action_normalized = torch.cat([xyz_normalized, torch.clamp(actions[:, 3:], min=-8.46, max=8.46)], dim=1)
+        self._raw_actions[:] = action_normalized
 
     def apply_actions(self):
         if self._counter % self.cfg.low_level_decimation == 0:

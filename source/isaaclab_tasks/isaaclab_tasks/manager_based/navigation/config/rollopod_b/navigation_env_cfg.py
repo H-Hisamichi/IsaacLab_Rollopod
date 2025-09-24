@@ -65,9 +65,9 @@ class ObservationsCfg:
 
         # observation terms (order preserved)
         base_com_lin_vel_w = ObsTerm(func=mdp.base_com_lin_vel_w)
-        projected_gravity = ObsTerm(func=mdp.projected_gravity)
+        #projected_gravity = ObsTerm(func=mdp.projected_gravity)
         pose_command = ObsTerm(func=mdp.generated_commands, params={"command_name": "pose_command"})
-        #actions = ObsTerm(func=mdp.last_action, params={"action_name": "pre_trained_policy_action"})
+        actions = ObsTerm(func=mdp.last_action, params={"action_name": "pre_trained_policy_action"})
 
     # observation groups
     policy: PolicyCfg = PolicyCfg()
@@ -77,11 +77,11 @@ class ObservationsCfg:
 class RewardsCfg:
     """Reward terms for the MDP."""
 
-    termination_penalty = RewTerm(func=mdp.is_terminated, weight=-400.0)
+    termination_penalty = RewTerm(func=mdp.is_terminated, weight=0.0)
     position_tracking = RewTerm(
         func=mdp.position_command_error_tanh,
         weight=1.0,
-        params={"std": 3.0, "command_name": "pose_command"},
+        params={"std": 2.0, "command_name": "pose_command"},
     )
     position_tracking_fine_grained = RewTerm(
         func=mdp.position_command_error_tanh,
@@ -101,7 +101,7 @@ class CommandsCfg:
         asset_name="robot",
         resampling_time_range=(8.0, 8.0),
         debug_vis=False,
-        ranges=mdp.UniformPosition2dCommandCfg.Ranges(pos_x=(-10.0, 10.0), pos_y=(-10.0, 10.0)),
+        ranges=mdp.UniformPosition2dCommandCfg.Ranges(pos_x=(-5.0, 5.0), pos_y=(-5.0, 5.0)),
     )
 
 
