@@ -65,7 +65,7 @@ class ObservationsCfg:
 
         # observation terms (order preserved)
         base_com_lin_vel_w = ObsTerm(func=mdp.base_com_lin_vel_w)
-        #projected_gravity = ObsTerm(func=mdp.projected_gravity)
+        projected_gravity = ObsTerm(func=mdp.projected_gravity)
         pose_command = ObsTerm(func=mdp.generated_commands, params={"command_name": "pose_command"})
         actions = ObsTerm(func=mdp.last_action, params={"action_name": "pre_trained_policy_action"})
 
@@ -77,7 +77,7 @@ class ObservationsCfg:
 class RewardsCfg:
     """Reward terms for the MDP."""
 
-    termination_penalty = RewTerm(func=mdp.is_terminated, weight=0.0)
+    termination_penalty = RewTerm(func=mdp.is_terminated, weight=-1.0)
     position_tracking = RewTerm(
         func=mdp.position_command_error_tanh,
         weight=1.0,

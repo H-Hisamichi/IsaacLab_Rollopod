@@ -11,7 +11,7 @@ from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlPpoActorCriticCfg, R
 @configclass
 class NavigationEnvPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 8
-    max_iterations = 1500
+    max_iterations = 2000
     save_interval = 50
     experiment_name = "rollopod_b_navigation"
     empirical_normalization = False
