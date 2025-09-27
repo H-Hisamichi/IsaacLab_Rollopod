@@ -88,10 +88,13 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         super().__post_init__()
         # switch robot to rollopod-b
         # scene
+        self.scene.terrain.max_init_terrain_level = 1
         self.scene.robot = ROLLOPOD_B_ROLLING_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.height_scanner.prim_path = "{ENV_REGEX_NS}/Robot/MainBody"
         self.scene.height_scanner.offset = RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.25))
-        self.scene.height_scanner.ray_alignment = "base"
-        self.scene.height_scanner.pattern_cfg = patterns.GridPatternCfg(resolution=0.2, size=[2.0, 0.6])
+        self.scene.height_scanner.ray_alignment = "world"
+        self.scene.height_scanner.pattern_cfg = patterns.GridPatternCfg(resolution=0.125, size=[2.0, 2.0])
+        #self.scene.height_scanner.debug_vis = True
 
         self.commands.base_velocity = mdp.UniformWorldVelocityCommandCfg(
             asset_name="robot",
@@ -115,9 +118,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         )
 
         # observations
-        #self.observations.policy.base_lin_vel = ObsTerm(
-        #    func=mdp.base_com_lin_vel, noise=Unoise(n_min=-0.2, n_max=0.2)
-        #)
+        self.observations.policy.height_scan.clip = (0.0, 4.0)
         #self.observations.policy.base_ang_vel = ObsTerm(
         #    func=mdp.base_com_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2)
         #)

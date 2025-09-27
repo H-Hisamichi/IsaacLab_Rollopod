@@ -76,7 +76,8 @@ from isaaclab.terrains import FlatPatchSamplingCfg, TerrainImporter, TerrainImpo
 ##
 # Pre-defined configs
 ##
-from isaaclab.terrains.config.rough import ROUGH_TERRAINS_CFG  # isort:skip
+#from isaaclab.terrains.config.rough import ROUGH_TERRAINS_CFG  # isort:skip
+from isaaclab.terrains.config.rollopod_rough import ROUGH_TERRAINS_CFG  # isort:skip
 
 
 def design_scene() -> tuple[dict, torch.Tensor]:
