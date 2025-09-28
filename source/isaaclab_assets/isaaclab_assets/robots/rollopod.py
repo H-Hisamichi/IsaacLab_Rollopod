@@ -49,7 +49,7 @@ ROLLOPOD_B_ROLLING_CFG = ArticulationCfg(
         #copy_from_source=False,
     ),
     init_state=ArticulationCfg.InitialStateCfg(
-        pos=(0.0, 0.0, 0.35),
+        pos=(0.0, 0.0, 0.40),
         rot=(0.7071, -0.7071, 0.0, 0.0),
         joint_pos={
             ".*": 0.0,

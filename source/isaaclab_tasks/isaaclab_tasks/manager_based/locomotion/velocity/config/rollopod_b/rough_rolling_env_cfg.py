@@ -95,6 +95,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.scene.height_scanner.ray_alignment = "world"
         self.scene.height_scanner.pattern_cfg = patterns.GridPatternCfg(resolution=0.125, size=[2.0, 2.0])
         #self.scene.height_scanner.debug_vis = True
+        #self.scene.height_scanner = None
 
         self.commands.base_velocity = mdp.UniformWorldVelocityCommandCfg(
             asset_name="robot",
@@ -119,6 +120,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
 
         # observations
         self.observations.policy.height_scan.clip = (0.0, 4.0)
+        #self.observations.policy.height_scan = None
         #self.observations.policy.base_ang_vel = ObsTerm(
         #    func=mdp.base_com_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2)
         #)
