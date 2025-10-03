@@ -6,7 +6,12 @@
 import math
 from isaaclab.utils import configclass
 
-from isaaclab_tasks.manager_based.locomotion.velocity.velocity_env_cfg import LocomotionVelocityRoughEnvCfg, RewardsCfg, CurriculumCfg
+from isaaclab_tasks.manager_based.locomotion.velocity.velocity_env_cfg import (
+    LocomotionVelocityRoughEnvCfg,
+    RewardsCfg,
+    CurriculumCfg,
+    ObservationsCfg
+)
 from isaaclab.managers import RewardTermCfg as RewTerm
 from isaaclab.managers import ObservationTermCfg as ObsTerm
 from isaaclab.managers import CurriculumTermCfg as CurrTerm
@@ -14,6 +19,7 @@ from isaaclab.managers import SceneEntityCfg
 from isaaclab.managers import TraveledDistanceRecorder
 import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
+from isaaclab.sensors import ContactSensorCfg, RayCasterCfg, patterns
 
 ##
 # Pre-defined configs
@@ -30,23 +36,23 @@ class RollopodRewards(RewardsCfg):
     feet_air_time = None
     undesired_contacts = None
     lin_vel_z_l2 = None
-    lin_vel_w_z_l2 = RewTerm(func=mdp.lin_vel_w_z_l2, weight=-0.5)
+    lin_vel_w_z_l2 = RewTerm(func=mdp.lin_vel_w_z_l2, weight=-0.6)
     #rolling_ang_vel = RewTerm(func=mdp.rolling_ang_vel, weight=0.1, params={"command_name": "base_velocity"})
     track_lin_vel_xy_w_exp = RewTerm(
-        func=mdp.track_lin_vel_dir_xy_exp, weight=0.8, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
+        func=mdp.track_lin_vel_dir_xy_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
     )
-    #track_lin_vel_xy_w_exp_fine_grained = RewTerm(
-    #    func=mdp.track_lin_vel_xy_w_exp, weight=0.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
-    #)
+    track_lin_vel_xy_w_exp_fine_grained = RewTerm(
+        func=mdp.track_lin_vel_dir_xy_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
+    )
     track_com_ang_vel_z_exp = RewTerm(
-        func=mdp.track_com_ang_vel_z_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25), "std_2": math.sqrt(1.5)}
+        func=mdp.track_com_ang_vel_z_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0), "std_2": math.sqrt(2.5)}
     )
-    #track_rolling_ang_vel_exp_fine_grained = RewTerm(
-    #    func=mdp.track_com_ang_vel_z_exp, weight=2.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
-    #)
+    track_com_ang_vel_z_exp_fine_grained = RewTerm(
+        func=mdp.track_com_ang_vel_z_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2), "std_2": math.sqrt(2.5)}
+    )
     # -- optional penalties
     flat_orientation_l2 = None
-    flat_z_orientation_l2 = RewTerm(func=mdp.flat_z_orientation_l2, weight=0.0)
+    #flat_z_orientation_l2 = RewTerm(func=mdp.flat_z_orientation_l2, weight=-0.25)
     shake_rolling_penalty = RewTerm(
         func=mdp.shake_rolling_penalty, weight=-0.5, params={"command_name": "base_velocity", "scale": 0.4}
     )
@@ -54,14 +60,26 @@ class RollopodRewards(RewardsCfg):
         func=mdp.rolling_slip_penalty, weight=-0.1, params={"command_name": "base_velocity", "scale": 0.5, "rolling_radius": 0.33}
     )
     #shake_rolling_penalty = RewTerm(func=mdp.ang_acc_w_z_l2, weight=-0.0001, params={"target_body": "MainBody"})
+    lin_vel_z_penalty = RewTerm(func=mdp.lin_vel_z_penalty, weight=-0.5)
+
+#@configclass
+#class RollopodObservations(ObservationsCfg):
+#    """Observation specifications for the MDP."""
+#    @configclass
+#    class RollopodPolicyCfg(ObservationsCfg.PolicyCfg):
+#        """Observations for policy group."""
+#        root_lin_vel_w = ObsTerm(func=mdp.root_lin_vel_w, noise=Unoise(n_min=-0.1, n_max=0.1))
+    
+#    policy: RollopodPolicyCfg = RollopodPolicyCfg()
 
 @configclass
 class RollopodCurriculums(CurriculumCfg):
-    terrain_levels = CurrTerm(func=mdp.terrain_levels_vel)
+    terrain_levels = None
 
 
 @configclass
 class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
+    #observations: RollopodObservations = RollopodObservations()
     rewards: RollopodRewards = RollopodRewards()
     curriculum: RollopodCurriculums = RollopodCurriculums()
 
@@ -69,8 +87,15 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         # post init of parent
         super().__post_init__()
         # switch robot to rollopod-b
+        # scene
+        self.scene.terrain.max_init_terrain_level = None
         self.scene.robot = ROLLOPOD_B_ROLLING_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
-        self.scene.height_scanner = None
+        self.scene.height_scanner.prim_path = "{ENV_REGEX_NS}/Robot/MainBody"
+        self.scene.height_scanner.offset = RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.25))
+        self.scene.height_scanner.ray_alignment = "world"
+        self.scene.height_scanner.pattern_cfg = patterns.GridPatternCfg(resolution=0.09375, size=[1.5, 1.5])
+        #self.scene.height_scanner.debug_vis = True
+        #self.scene.height_scanner = None
 
         self.commands.base_velocity = mdp.UniformWorldVelocityCommandCfg(
             asset_name="robot",
@@ -94,14 +119,13 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         )
 
         # observations
-        #self.observations.policy.base_lin_vel = ObsTerm(
-        #    func=mdp.base_com_lin_vel, noise=Unoise(n_min=-0.2, n_max=0.2)
-        #)
+        self.observations.policy.height_scan.clip = (0.0, 4.0)
+        #self.observations.policy.height_scan = None
         #self.observations.policy.base_ang_vel = ObsTerm(
         #    func=mdp.base_com_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2)
         #)
-        self.observations.policy.height_scan = None
-        self.observations.policy.base_lin_vel.func = mdp.root_lin_vel_w
+        #self.observations.policy.height_scan = None
+        #self.observations.policy.base_lin_vel.func = mdp.root_lin_vel_w
 
         self.events.physics_material.params = {
             "asset_cfg": SceneEntityCfg("robot", body_names=".*"),
@@ -140,9 +164,9 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.events.push_robot.params = {"velocity_range": {"yaw": (-0.5, 0.5)}}
 
         # Rewards
-        self.rewards.dof_torques_l2.weight = -1.0e-5
-        self.rewards.dof_acc_l2.weight = -2.5e-7
-        self.rewards.action_rate_l2.weight = -0.01
+        #self.rewards.dof_torques_l2.weight = -0.5e-5
+        #self.rewards.dof_acc_l2.weight = -2.0e-7
+        #self.rewards.action_rate_l2.weight = -0.01
 
         self.terminations.base_contact.params = {"sensor_cfg": SceneEntityCfg("contact_forces", body_names="MainBody"), "threshold": 1.0}
 
@@ -174,3 +198,6 @@ class RollopodBRoughEnvCfg_PLAY(RollopodBRoughEnvCfg):
         # remove random pushing event
         self.events.base_external_force_torque = None
         self.events.push_robot = None
+
+        self.commands.base_velocity.debug_vis = True
+        self.scene.height_scanner.debug_vis = True

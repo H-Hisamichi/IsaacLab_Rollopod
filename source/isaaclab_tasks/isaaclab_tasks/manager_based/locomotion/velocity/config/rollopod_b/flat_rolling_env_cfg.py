@@ -19,6 +19,10 @@ class RollopodBFlatEnvCfg(RollopodBRoughEnvCfg):
         self.scene.terrain.terrain_generator = None
         # no terrain curriculum
         self.curriculum.terrain_levels = None
+        # scene
+        #self.scene.height_scanner = None
+        # observations
+        #self.observations.policy.height_scan = None
 
 
 class RollopodBFlatEnvCfg_PLAY(RollopodBFlatEnvCfg):
@@ -34,3 +38,5 @@ class RollopodBFlatEnvCfg_PLAY(RollopodBFlatEnvCfg):
         # remove random pushing event
         self.events.base_external_force_torque = None
         self.events.push_robot = None
+
+        self.commands.base_velocity.debug_vis = True

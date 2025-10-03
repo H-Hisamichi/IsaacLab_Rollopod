@@ -9,16 +9,16 @@ from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlPpoActorCriticCfg, R
 
 
 @configclass
-class RollopodBRoughPPORunnerCfg(RslRlOnPolicyRunnerCfg):
-    num_steps_per_env = 24
+class NavigationEnvPPORunnerCfg(RslRlOnPolicyRunnerCfg):
+    num_steps_per_env = 8
     max_iterations = 2000
-    save_interval = 100
-    experiment_name = "rollopod_b_rough"
+    save_interval = 50
+    experiment_name = "rollopod_b_navigation"
     empirical_normalization = False
     policy = RslRlPpoActorCriticCfg(
-        init_noise_std=1.0,
-        actor_hidden_dims=[512, 256, 128, 64],
-        critic_hidden_dims=[512, 256, 128, 64],
+        init_noise_std=0.5,
+        actor_hidden_dims=[512, 256, 128],
+        critic_hidden_dims=[512, 256, 128],
         activation="elu",
     )
     algorithm = RslRlPpoAlgorithmCfg(
@@ -35,15 +35,3 @@ class RollopodBRoughPPORunnerCfg(RslRlOnPolicyRunnerCfg):
         desired_kl=0.01,
         max_grad_norm=1.0,
     )
-
-
-@configclass
-class RollopodBFlatPPORunnerCfg(RollopodBRoughPPORunnerCfg):
-    def __post_init__(self):
-        super().__post_init__()
-
-        self.max_iterations = 5000
-        self.save_interval = 100
-        self.experiment_name = "rollopod_b_flat"
-        self.policy.actor_hidden_dims = [512, 256, 128, 64]
-        self.policy.critic_hidden_dims = [512, 256, 128, 64]
