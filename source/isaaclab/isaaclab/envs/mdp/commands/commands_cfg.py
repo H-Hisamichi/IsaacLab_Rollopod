@@ -15,12 +15,10 @@ from .null_command import NullCommand
 from .pose_2d_command import TerrainBasedPose2dCommand, UniformPose2dCommand
 from .pose_command import UniformPoseCommand
 from .velocity_command import NormalVelocityCommand, UniformVelocityCommand
-<<<<<<< HEAD
 from .rolling_command import CamberAngleANDRollingVelocityCommand, CamberAngleANDRollingAngularVelocityCommand, UniformWorldVelocityCommand
 from .jumping_command import JumpingCommand
-=======
 from .rolling_command import CamberAngleANDRollingVelocityCommand, CamberAngleANDRollingAngularVelocityCommand, UniformWorldVelocityCommand, UniformPosition2dCommand
->>>>>>> UniformWorldTORootVelocityCommand
+
 
 
 @configclass
@@ -442,17 +440,16 @@ class UniformWorldVelocityCommandCfg(CommandTermCfg):
     current_vel_visualizer_cfg.markers["arrow"].scale = (0.5, 0.5, 0.5)
 
 @configclass
-<<<<<<< HEAD
 class JumpingCommandCfg(CommandTermCfg):
     """Configuration for the uniform 2D-pose command generator."""
 
     class_type: type = JumpingCommand
-=======
+
 class UniformPosition2dCommandCfg(CommandTermCfg):
     """Configuration for the uniform 2D-pose command generator."""
 
     class_type: type = UniformPosition2dCommand
->>>>>>> UniformWorldTORootVelocityCommand
+
 
     asset_name: str = MISSING
     """Name of the asset in the environment for which the commands are generated."""
@@ -467,16 +464,13 @@ class UniformPosition2dCommandCfg(CommandTermCfg):
         pos_y: tuple[float, float] = MISSING
         """Range for the y position (in m)."""
 
-<<<<<<< HEAD
         pos_z: tuple[float, float] = MISSING
         """Range for the z position (in m)."""
-=======
->>>>>>> UniformWorldTORootVelocityCommand
+
 
     ranges: Ranges = MISSING
     """Distribution ranges for the position commands."""
 
-<<<<<<< HEAD
     goal_pose_visualizer_cfg: VisualizationMarkersCfg = GREEN_ARROW_X_MARKER_CFG.replace(
         prim_path="/Visuals/Command/pose_goal"
     )
@@ -484,9 +478,8 @@ class UniformPosition2dCommandCfg(CommandTermCfg):
 
     # Set the scale of the visualization markers to (0.2, 0.2, 0.8)
     goal_pose_visualizer_cfg.markers["arrow"].scale = (0.2, 0.2, 0.8)
-=======
     goal_pose_visualizer_cfg: VisualizationMarkersCfg = SPHERE_MARKER_CFG.replace(
         prim_path="/Visuals/Command/pose_goal"
     )
     """The configuration for the goal pose visualization marker. Defaults to GREEN_ARROW_X_MARKER_CFG."""
->>>>>>> UniformWorldTORootVelocityCommand
+

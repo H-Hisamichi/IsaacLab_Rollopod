@@ -18,7 +18,7 @@ ROUGH_TERRAINS_CFG = TerrainGeneratorCfg(
     vertical_scale=0.005,
     slope_threshold=0.75,
     use_cache=False,
-    difficulty_range=(0.0, 0.1),
+    difficulty_range=(0.0, 0.7),
     sub_terrains={
         "boxes": terrain_gen.MeshRandomGridTerrainCfg(
             proportion=0.2, grid_width=0.45, grid_height_range=(0.05, 0.2), platform_width=2.0
