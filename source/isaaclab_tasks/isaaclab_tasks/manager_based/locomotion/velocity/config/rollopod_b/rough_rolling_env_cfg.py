@@ -10,7 +10,8 @@ from isaaclab_tasks.manager_based.locomotion.velocity.velocity_env_cfg import (
     LocomotionVelocityRoughEnvCfg,
     RewardsCfg,
     CurriculumCfg,
-    ObservationsCfg
+    ObservationsCfg,
+    MySceneCfg
 )
 from isaaclab.managers import RewardTermCfg as RewTerm
 from isaaclab.managers import ObservationTermCfg as ObsTerm
@@ -26,6 +27,43 @@ from isaaclab.sensors import ContactSensorCfg, RayCasterCfg, patterns
 ##
 from isaaclab_assets.robots.rollopod import ROLLOPOD_B_ROLLING_CFG  # isort: skip
 
+@configclass
+class RollopodSceneCfg(MySceneCfg):
+    """Configuration for the terrain scene with a legged robot."""
+    # sensors
+    height_scanner = None
+    height_scanner_00 = RayCasterCfg(
+        prim_path="{ENV_REGEX_NS}/Robot/MainBody",
+        offset=RayCasterCfg.OffsetCfg(pos=(0.105, 0.0, 0.0)),
+        ray_alignment="world",
+        pattern_cfg=patterns.GridPatternCfg(resolution=1.18, size=[3.54, 3.54], direction=[1.0, 0.0, 0.0]),
+        debug_vis=True,
+        mesh_prim_paths=["/World/ground"],
+    )
+    height_scanner_01 = RayCasterCfg(
+        prim_path="{ENV_REGEX_NS}/Robot/MainBody",
+        offset=RayCasterCfg.OffsetCfg(pos=(0.0, 0.105, 0.0)),
+        ray_alignment="world",
+        pattern_cfg=patterns.GridPatternCfg(resolution=1.18, size=[3.54, 3.54], direction=[0.0, 1.0, 0.0]),
+        debug_vis=True,
+        mesh_prim_paths=["/World/ground"],
+    )
+    height_scanner_02 = RayCasterCfg(
+        prim_path="{ENV_REGEX_NS}/Robot/MainBody",
+        offset=RayCasterCfg.OffsetCfg(pos=(-0.105, 0.0, 0.0)),
+        ray_alignment="world",
+        pattern_cfg=patterns.GridPatternCfg(resolution=1.18, size=[3.54, 3.54], direction=[-1.0, 0.0, 0.0]),
+        debug_vis=True,
+        mesh_prim_paths=["/World/ground"],
+    )
+    height_scanner_03 = RayCasterCfg(
+        prim_path="{ENV_REGEX_NS}/Robot/MainBody",
+        offset=RayCasterCfg.OffsetCfg(pos=(0.0, -0.105, 0.0)),
+        ray_alignment="world",
+        pattern_cfg=patterns.GridPatternCfg(resolution=1.18, size=[3.54, 3.54], direction=[0.0, -1.0, 0.0]),
+        debug_vis=True,
+        mesh_prim_paths=["/World/ground"],
+    )
 @configclass
 class RollopodRewards(RewardsCfg):
     """Reward terms for the MDP."""
@@ -62,15 +100,40 @@ class RollopodRewards(RewardsCfg):
     #shake_rolling_penalty = RewTerm(func=mdp.ang_acc_w_z_l2, weight=-0.0001, params={"target_body": "MainBody"})
     lin_vel_z_penalty = RewTerm(func=mdp.lin_vel_z_penalty, weight=-0.5)
 
-#@configclass
-#class RollopodObservations(ObservationsCfg):
-#    """Observation specifications for the MDP."""
-#    @configclass
-#    class RollopodPolicyCfg(ObservationsCfg.PolicyCfg):
-#        """Observations for policy group."""
-#        root_lin_vel_w = ObsTerm(func=mdp.root_lin_vel_w, noise=Unoise(n_min=-0.1, n_max=0.1))
+@configclass
+class RollopodObservations(ObservationsCfg):
+    """Observation specifications for the MDP."""
+    @configclass
+    class RollopodPolicyCfg(ObservationsCfg.PolicyCfg):
+        """Observations for policy group."""
+        height_scan = None
+        height_scan_00 = ObsTerm(
+            func=mdp.height_scan,
+            params={"sensor_cfg": SceneEntityCfg("height_scanner_00")},
+            noise=Unoise(n_min=-0.1, n_max=0.1),
+            clip=(-1.0, 1.0),
+        )
+        height_scan_01 = ObsTerm(
+            func=mdp.height_scan,
+            params={"sensor_cfg": SceneEntityCfg("height_scanner_01")},
+            noise=Unoise(n_min=-0.1, n_max=0.1),
+            clip=(-1.0, 1.0),
+        )
+        height_scan_02 = ObsTerm(
+            func=mdp.height_scan,
+            params={"sensor_cfg": SceneEntityCfg("height_scanner_02")},
+            noise=Unoise(n_min=-0.1, n_max=0.1),
+            clip=(-1.0, 1.0),
+        )
+        height_scan_03 = ObsTerm(
+            func=mdp.height_scan,
+            params={"sensor_cfg": SceneEntityCfg("height_scanner_03")},
+            noise=Unoise(n_min=-0.1, n_max=0.1),
+            clip=(-1.0, 1.0),
+        )
+
     
-#    policy: RollopodPolicyCfg = RollopodPolicyCfg()
+    policy: RollopodPolicyCfg = RollopodPolicyCfg()
 
 @configclass
 class RollopodCurriculums(CurriculumCfg):
@@ -79,7 +142,8 @@ class RollopodCurriculums(CurriculumCfg):
 
 @configclass
 class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
-    #observations: RollopodObservations = RollopodObservations()
+    scene: RollopodSceneCfg = RollopodSceneCfg(num_envs=4096, env_spacing=2.5)
+    observations: RollopodObservations = RollopodObservations()
     rewards: RollopodRewards = RollopodRewards()
     curriculum: RollopodCurriculums = RollopodCurriculums()
 
@@ -90,10 +154,10 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         # scene
         self.scene.terrain.max_init_terrain_level = None
         self.scene.robot = ROLLOPOD_B_ROLLING_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
-        self.scene.height_scanner.prim_path = "{ENV_REGEX_NS}/Robot/MainBody"
-        self.scene.height_scanner.offset = RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.25))
-        self.scene.height_scanner.ray_alignment = "world"
-        self.scene.height_scanner.pattern_cfg = patterns.GridPatternCfg(resolution=0.1875, size=[1.5, 1.5])
+        #self.scene.height_scanner.prim_path = "{ENV_REGEX_NS}/Robot/MainBody"
+        #self.scene.height_scanner.offset = RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.25))
+        #self.scene.height_scanner.ray_alignment = "world"
+        #self.scene.height_scanner.pattern_cfg = patterns.GridPatternCfg(resolution=0.1875, size=[1.5, 1.5])
         #self.scene.height_scanner.debug_vis = True
         #self.scene.height_scanner = None
 
@@ -119,8 +183,8 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         )
 
         # observations
-        self.observations.policy.height_scan.clip = (0.0, 4.0)
-        #self.observations.policy.height_scan = None
+        #self.observations.policy.height_scan.clip = (0.0, 4.0)
+        #self.observations.policy.height_scan.params = {"sensor_cfg": SceneEntityCfg("height_scanner_01")}
         #self.observations.policy.base_ang_vel = ObsTerm(
         #    func=mdp.base_com_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2)
         #)
@@ -171,6 +235,9 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.terminations.base_contact.params = {"sensor_cfg": SceneEntityCfg("contact_forces", body_names="MainBody"), "threshold": 1.0}
 
         #self.curriculum.terrain_levels.func = mdp.terrain_levels_vel_rollopod
+
+        if self.scene.height_scanner_01 is not None:
+            self.scene.height_scanner_01.update_period = self.decimation * self.sim.dt
 
         
 
