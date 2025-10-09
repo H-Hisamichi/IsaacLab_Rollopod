@@ -35,7 +35,7 @@ class RollopodSceneCfg(MySceneCfg):
     height_scanner_00 = RayCasterCfg(
         prim_path="{ENV_REGEX_NS}/Robot/MainBody",
         offset=RayCasterCfg.OffsetCfg(pos=(0.105, 0.0, 0.0)),
-        ray_alignment=None,
+        ray_alignment="base",
         pattern_cfg=patterns.GridPatternCfg(resolution=1.18, size=[3.54, 3.54], direction=[1.0, 0.0, 0.0]),
         debug_vis=True,
         mesh_prim_paths=["/World/ground"],
@@ -43,25 +43,25 @@ class RollopodSceneCfg(MySceneCfg):
     height_scanner_01 = RayCasterCfg(
         prim_path="{ENV_REGEX_NS}/Robot/MainBody",
         offset=RayCasterCfg.OffsetCfg(pos=(0.0, 0.105, 0.0)),
-        ray_alignment=None,
+        ray_alignment="base",
         pattern_cfg=patterns.GridPatternCfg(resolution=1.18, size=[3.54, 3.54], direction=[0.0, 1.0, 0.0]),
-        debug_vis=True,
+        debug_vis=False,
         mesh_prim_paths=["/World/ground"],
     )
     height_scanner_02 = RayCasterCfg(
         prim_path="{ENV_REGEX_NS}/Robot/MainBody",
         offset=RayCasterCfg.OffsetCfg(pos=(-0.105, 0.0, 0.0)),
-        ray_alignment=None,
+        ray_alignment="base",
         pattern_cfg=patterns.GridPatternCfg(resolution=1.18, size=[3.54, 3.54], direction=[-1.0, 0.0, 0.0]),
-        debug_vis=True,
+        debug_vis=False,
         mesh_prim_paths=["/World/ground"],
     )
     height_scanner_03 = RayCasterCfg(
         prim_path="{ENV_REGEX_NS}/Robot/MainBody",
         offset=RayCasterCfg.OffsetCfg(pos=(0.0, -0.105, 0.0)),
-        ray_alignment=None,
+        ray_alignment="base",
         pattern_cfg=patterns.GridPatternCfg(resolution=1.18, size=[3.54, 3.54], direction=[0.0, -1.0, 0.0]),
-        debug_vis=True,
+        debug_vis=False,
         mesh_prim_paths=["/World/ground"],
     )
 @configclass
