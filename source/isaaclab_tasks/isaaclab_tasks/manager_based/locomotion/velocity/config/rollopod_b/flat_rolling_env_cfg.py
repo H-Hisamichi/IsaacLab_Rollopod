@@ -40,3 +40,4 @@ class RollopodBFlatEnvCfg_PLAY(RollopodBFlatEnvCfg):
         self.events.push_robot = None
 
         self.commands.base_velocity.debug_vis = True
+        self.scene.height_scanner.debug_vis = True
