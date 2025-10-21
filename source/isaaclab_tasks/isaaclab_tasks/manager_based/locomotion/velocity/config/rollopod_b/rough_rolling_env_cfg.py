@@ -91,9 +91,9 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.scene.terrain.max_init_terrain_level = None
         self.scene.robot = ROLLOPOD_B_ROLLING_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         self.scene.height_scanner.prim_path = "{ENV_REGEX_NS}/Robot/MainBody"
-        self.scene.height_scanner.offset = RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.25))
+        self.scene.height_scanner.offset = RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.165))
         self.scene.height_scanner.ray_alignment = "world"
-        self.scene.height_scanner.pattern_cfg = patterns.GridPatternCfg(resolution=0.1875, size=[1.5, 1.5])
+        self.scene.height_scanner.pattern_cfg = patterns.GridPatternCfg(resolution=0.5, size=[3.5, 3.5])
         #self.scene.height_scanner.debug_vis = True
         #self.scene.height_scanner = None
 
