@@ -210,7 +210,7 @@ def flat_z_orientation_l2(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = Sc
 def shake_rolling_penalty(
     env: ManagerBasedRLEnv,  scale: float, command_name: str, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
 ) -> torch.Tensor:
-    """Reward tracking of angular velocity commands (yaw) using exponential kernel."""
+    """Penalizes yaw (Z-axis) rotation when its direction opposes the commanded direction."""
     # extract the used quantities (to enable type-hinting)
     asset: RigidObject = env.scene[asset_cfg.name]
     _command = env.command_manager.get_command(command_name)[:, -1]
@@ -239,7 +239,7 @@ def rolling_slip_penalty(env: ManagerBasedRLEnv, scale: float, rolling_radius: f
     return torch.exp(scale * torch.abs(target_lin_val - current_lin_vel))
 
 def lin_vel_z_penalty(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
-    """Penalize z-axis world frame linear velocity using L2 squared kernel."""
+    """Penalize z-axis body frame linear velocity using L2 squared kernel."""
     # extract the used quantities (to enable type-hinting)
     asset: Articulation = env.scene[asset_cfg.name]
     return torch.square(asset.data.root_com_lin_vel_b[:, 2])
