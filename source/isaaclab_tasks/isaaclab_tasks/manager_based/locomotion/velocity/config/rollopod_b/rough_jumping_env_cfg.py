@@ -18,7 +18,7 @@ from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 ##
 # Pre-defined configs
 ##
-from isaaclab_assets.robots.rollopod import ROLLOPOD_B_ROLLING_CFG  # isort: skip
+from isaaclab_assets.robots.rollopod import ROLLOPOD_B_WALKING_CFG  # isort: skip
 
 @configclass
 class JumpingRewards(RewardsCfg):
@@ -58,7 +58,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             rel_standing_envs=0.02,
             debug_vis=False,
             ranges=mdp.JumpingCommandCfg.Ranges(
-                pos_x=(0.0, 0.0), pos_y=(0.0, 0.0), pos_z=(0.5, 1.5)
+                pos_x=(0.0, 0.0), pos_y=(0.0, 0.0), pos_z=(0.5, 1.0)
             ),
         )
 
@@ -67,8 +67,8 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             joint_names=[".*"],
             scale={
                 ".*RevoluteJoint1": 0.3,
-                ".*RevoluteJoint2": 0.5,
-                ".*RevoluteJoint3": 0.5,
+                ".*RevoluteJoint2": 0.3,
+                ".*RevoluteJoint3": 0.3,
             },
             use_default_offset=True
         )

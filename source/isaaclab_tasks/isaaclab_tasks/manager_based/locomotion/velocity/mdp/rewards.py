@@ -317,5 +317,9 @@ def track_pos_w_exp(
     asset: Articulation = env.scene[asset_cfg.name]
     # compute the error
     pos_error = torch.square(torch.norm(env.command_manager.get_command(command_name) - asset.data.root_com_pos_w, dim=1))
-    return torch.exp(-pos_error / std**2)
+    reward = torch.exp(-pos_error / std**2)
+
+    vel_z = asset.data.root_com_lin_vel_b[:, 2]
+    reward = torch.where(vel_z > 0.0, reward, torch.zeros_like(reward))
+    return reward
 
