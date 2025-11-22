@@ -14,6 +14,7 @@ from isaaclab.managers import SceneEntityCfg
 from isaaclab.managers import TraveledDistanceRecorder
 import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
+from isaaclab.sensors import ContactSensorCfg, RayCasterCfg, patterns
 
 ##
 # Pre-defined configs
@@ -48,14 +49,15 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         # post init of parent
         super().__post_init__()
         # switch robot to rollopod-b
-        self.scene.robot = ROLLOPOD_B_ROLLING_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.robot = ROLLOPOD_B_WALKING_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.height_scanner.prim_path = "{ENV_REGEX_NS}/Robot/MainBody"
         self.scene.height_scanner.offset = RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.0))
         self.scene.height_scanner.pattern_cfg = patterns.GridPatternCfg(resolution=0.2, size=[1.0, 1.0])
 
         self.commands.base_velocity = mdp.JumpingCommandCfg(
             asset_name="robot",
             resampling_time_range=(10.0, 10.0),
-            rel_standing_envs=0.02,
+            #rel_standing_envs=0.02,
             debug_vis=False,
             ranges=mdp.JumpingCommandCfg.Ranges(
                 pos_x=(0.0, 0.0), pos_y=(0.0, 0.0), pos_z=(0.5, 1.0)
@@ -80,8 +82,8 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         #self.observations.policy.base_ang_vel = ObsTerm(
         #    func=mdp.base_com_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2)
         #)
-        self.observations.policy.height_scan = None
-        self.observations.policy.base_lin_vel.func = mdp.root_lin_vel_w
+        #self.observations.policy.height_scan = None
+        #self.observations.policy.base_lin_vel.func = mdp.root_lin_vel_w
 
         self.events.physics_material.params = {
             "asset_cfg": SceneEntityCfg("robot", body_names=".*"),
