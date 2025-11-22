@@ -5,7 +5,7 @@
 
 from isaaclab.utils import configclass
 
-from .rough_jumping_env_cfg import RollopodBRoughEnvCfg
+from .rough_rolling_env_cfg import RollopodBRoughEnvCfg
 
 
 @configclass
