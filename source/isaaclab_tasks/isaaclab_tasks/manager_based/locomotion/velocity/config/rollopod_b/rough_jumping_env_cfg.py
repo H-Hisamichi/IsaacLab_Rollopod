@@ -48,6 +48,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
+        self.sim.gravity = (0.0, 0.0, -1.62)
         # switch robot to rollopod-b
         self.scene.robot = ROLLOPOD_B_WALKING_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         self.scene.height_scanner.prim_path = "{ENV_REGEX_NS}/Robot/MainBody"
@@ -60,7 +61,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             #rel_standing_envs=0.02,
             debug_vis=False,
             ranges=mdp.JumpingCommandCfg.Ranges(
-                pos_x=(0.0, 0.0), pos_y=(0.0, 0.0), pos_z=(0.5, 1.0)
+                pos_x=(0.0, 0.0), pos_y=(0.0, 0.0), pos_z=(1.0, 3.0)
             ),
         )
 
@@ -68,9 +69,9 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             asset_name="robot",
             joint_names=[".*"],
             scale={
-                ".*RevoluteJoint1": 0.3,
-                ".*RevoluteJoint2": 0.3,
-                ".*RevoluteJoint3": 0.3,
+                ".*RevoluteJoint1": 0.5,
+                ".*RevoluteJoint2": 0.5,
+                ".*RevoluteJoint3": 0.5,
             },
             use_default_offset=True
         )
@@ -122,7 +123,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.events.push_robot.params = {"velocity_range": {"yaw": (-0.5, 0.5)}}
 
         # Rewards
-        self.rewards.dof_torques_l2.weight = -1.0e-5
+        self.rewards.dof_torques_l2.weight = -0.2e-5
         self.rewards.dof_acc_l2.weight = -2.5e-7
         self.rewards.action_rate_l2.weight = -0.01
         self.rewards.flat_orientation_l2.weight = -0.25
