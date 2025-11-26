@@ -180,6 +180,13 @@ def track_com_ang_vel_z_exp(
     reward = torch.where(condition, excess_reward, reward)
     return reward
 
+def jump_vel_w_z_l2(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
+    """L2 squared regularization of z-axis world frame linear velocity."""
+    # extract the used quantities (to enable type-hinting)
+    asset: RigidObject = env.scene[asset_cfg.name]
+    vel_z = asset.data.root_lin_vel_w[:, 2]
+    return torch.square(torch.clamp(vel_z, min=0.0))
+
 def lin_vel_w_z_l2(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
     """Penalize z-axis world frame linear velocity using L2 squared kernel."""
     # extract the used quantities (to enable type-hinting)

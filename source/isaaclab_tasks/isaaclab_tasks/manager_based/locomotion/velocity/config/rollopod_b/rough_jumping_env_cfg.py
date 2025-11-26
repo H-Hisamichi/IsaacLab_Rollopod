@@ -31,8 +31,12 @@ class JumpingRewards(RewardsCfg):
     undesired_contacts = None
     lin_vel_z_l2 = None
     track_pos_w_exp = RewTerm(
-        func=mdp.track_pos_w_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
+        func=mdp.track_pos_w_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
     )
+    track_pos_w_exp_fine_grained = RewTerm(
+        func=mdp.track_pos_w_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
+    )
+    jump_vel_w_z_l2 = RewTerm(func=mdp.jump_vel_w_z_l2, weight=0.5)
     # -- optional penalties
 
 @configclass
@@ -48,6 +52,8 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
+        self.decimation = 2
+        self.episode_length_s = 10.0
         self.sim.gravity = (0.0, 0.0, -1.62)
         # switch robot to rollopod-b
         self.scene.robot = ROLLOPOD_B_WALKING_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
@@ -69,9 +75,9 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             asset_name="robot",
             joint_names=[".*"],
             scale={
-                ".*RevoluteJoint1": 0.5,
-                ".*RevoluteJoint2": 0.5,
-                ".*RevoluteJoint3": 0.5,
+                ".*RevoluteJoint1": 0.3,
+                ".*RevoluteJoint2": 0.9,
+                ".*RevoluteJoint3": 0.9,
             },
             use_default_offset=True
         )
@@ -123,8 +129,8 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.events.push_robot.params = {"velocity_range": {"yaw": (-0.5, 0.5)}}
 
         # Rewards
-        self.rewards.dof_torques_l2.weight = -0.2e-5
-        self.rewards.dof_acc_l2.weight = -2.5e-7
+        self.rewards.dof_torques_l2.weight = -0.1e-5
+        self.rewards.dof_acc_l2.weight = -1.5e-7
         self.rewards.action_rate_l2.weight = -0.01
         self.rewards.flat_orientation_l2.weight = -0.25
 
