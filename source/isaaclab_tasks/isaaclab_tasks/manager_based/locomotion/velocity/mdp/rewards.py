@@ -330,3 +330,70 @@ def track_pos_w_exp(
     reward = torch.where(vel_z > 0.0, reward, torch.zeros_like(reward))
     return reward
 
+def track_pos_exp(
+    env: ManagerBasedRLEnv, std: float, command_name: str, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
+    """Reward tracking of position commands using exponential kernel."""
+    # extract the used quantities (to enable type-hinting)
+    asset: Articulation = env.scene[asset_cfg.name]
+    # compute the error
+    pos_error = torch.square(torch.norm(env.command_manager.get_command(command_name) - asset.data.root_com_pos_w, dim=1))
+    reward = torch.exp(-pos_error / std**2)
+    return reward
+
+def track_pos_binary(
+    env: ManagerBasedRLEnv, threshold: float, command_name: str, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
+    """Binary reward: returns 1.0 if position error is within threshold, else 0.0."""
+    asset: Articulation = env.scene[asset_cfg.name]
+    # compute the position error vector
+    pos_error_vec = env.command_manager.get_command(command_name) - asset.data.root_com_pos_w
+    distance = torch.norm(pos_error_vec, dim=1)
+    reward = (distance <= threshold).float()
+    return reward
+
+def jump_success_terminal(
+    env: ManagerBasedRLEnv, target_height: float, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+) -> torch.Tensor:
+    robot = env.scene[asset_cfg.name]
+    # Example: use base COM z position
+    base_height = robot.data.root_com_pos_w[:, 2]
+
+    # Detect terminal step (include or exclude timeouts as desired)
+    terminated = env.termination_manager.terminated
+    time_outs = env.termination_manager.time_outs
+    is_terminal_step = terminated | time_outs  # or just `terminated` if you prefer
+
+    # End-of-episode sparse reward
+    success = (base_height >= target_height) & is_terminal_step
+    reward = success.float()  # e.g. 1.0 for success, 0 otherwise
+
+    return reward
+
+def jump_success_terminal_latched(
+    env: ManagerBasedRLEnv, command_name: str, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+) -> torch.Tensor:
+    """
+    A reward that returns 1.0 at the end of an episode if the target height is reached at least once during the episode.
+    """
+    robot = env.scene[asset_cfg.name]
+    current_height = robot.data.root_com_pos_w[:, 2]
+    target_height = env.command_manager.get_command(command_name)[:, 2]
+    # initialize the buffer for maintaining the state
+    if not hasattr(env, "_jump_success_latch"):
+        env._jump_success_latch = torch.zeros(env.num_envs, dtype=torch.bool, device=env.device)
+    
+    # reset flag to False at episode start
+    reset_env_ids = (env.episode_length_buf == 0).nonzero(as_tuple=False).flatten()
+    if len(reset_env_ids) > 0:
+        env._jump_success_latch[reset_env_ids] = False
+    
+    # update flags
+    is_above_target = current_height >= target_height
+    env._jump_success_latch = env._jump_success_latch | is_above_target
+
+    # detect terminal step (include or exclude timeouts as desired)
+    terminated = env.termination_manager.terminated
+    time_outs = env.termination_manager.time_outs
+    is_terminal_step = terminated | time_outs  # or just `terminated` if you prefer
+    return (env._jump_success_latch & is_terminal_step).float()

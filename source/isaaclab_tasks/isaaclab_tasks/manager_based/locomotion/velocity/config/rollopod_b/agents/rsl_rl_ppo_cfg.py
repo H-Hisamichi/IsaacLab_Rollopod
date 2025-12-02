@@ -53,8 +53,23 @@ class RollopodBJumpingPPORunnerCfg(RollopodBRoughPPORunnerCfg):
     def __post_init__(self):
         super().__post_init__()
 
+        self.num_steps_per_env = 48
         self.max_iterations = 5000
         self.save_interval = 100
         self.experiment_name = "rollopod_b_flat_jumping"
-        self.policy.actor_hidden_dims = [512, 256, 128]
-        self.policy.critic_hidden_dims = [512, 256, 128]
+        self.policy.actor_hidden_dims = [512, 256, 128, 64]
+        self.policy.critic_hidden_dims = [512, 256, 128, 64]
+        self.algorithm = RslRlPpoAlgorithmCfg(
+            value_loss_coef=1.0,
+            use_clipped_value_loss=True,
+            clip_param=0.2,
+            entropy_coef=0.005,
+            num_learning_epochs=5,
+            num_mini_batches=8,
+            learning_rate=1.0e-3,
+            schedule="adaptive",
+            gamma=0.99,
+            lam=0.95,
+            desired_kl=0.01,
+            max_grad_norm=1.0,
+        )

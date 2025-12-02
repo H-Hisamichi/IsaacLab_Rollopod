@@ -101,6 +101,44 @@ ROLLOPOD_B_WALKING_CFG = ArticulationCfg(
         ),
     },
 )
+
+ROLLOPOD_B_JUMPING_CFG = ArticulationCfg(
+    prim_path="{ENV_REGEX_NS}/Robot",
+    spawn=sim_utils.UsdFileCfg(
+        #usd_path="/home/robot/hisamichi/IsaacSim/rollopod_b_simplification_v26_quadruped.usd",
+        usd_path="/home/robot/hisamichi/IsaacSim/rollopod_b_simplification_v29.usd",
+        activate_contact_sensors=True,
+        rigid_props=sim_utils.RigidBodyPropertiesCfg(
+            disable_gravity=False,
+            max_depenetration_velocity=10.0,
+            enable_gyroscopic_forces=True,
+        ),
+        articulation_props=sim_utils.ArticulationRootPropertiesCfg(
+            enabled_self_collisions=True,
+            solver_position_iteration_count=4,
+            solver_velocity_iteration_count=0,
+            #sleep_threshold=0.005,
+            stabilization_threshold=0.001,
+        ),
+        copy_from_source=False,
+    ),
+    init_state=ArticulationCfg.InitialStateCfg(
+        pos=(0.0, 0.0, 0.4),
+        #rot=(0.7071, -0.7071, 0.0, 0.0),
+        joint_pos={
+            "Leg1_RevoluteJoint1":0.0, "Leg2_RevoluteJoint1":0.0, "Leg3_RevoluteJoint1":0.0, "Leg4_RevoluteJoint1":0.0, "Leg5_RevoluteJoint1":0.0, "Leg6_RevoluteJoint1":0.0,
+            "Leg1_RevoluteJoint2":0.873, "Leg2_RevoluteJoint2":0.873, "Leg3_RevoluteJoint2":0.873, "Leg4_RevoluteJoint2":0.873, "Leg5_RevoluteJoint2":0.873, "Leg6_RevoluteJoint2":0.873,
+            "Leg1_RevoluteJoint3":-1.05, "Leg2_RevoluteJoint3":-1.05, "Leg3_RevoluteJoint3":-1.05, "Leg4_RevoluteJoint3":-1.05, "Leg5_RevoluteJoint3":-1.05, "Leg6_RevoluteJoint3":-1.05
+        }, # def: 0.0, 1.71, -2.195
+    ),
+    actuators={
+        "body": ImplicitActuatorCfg(
+            joint_names_expr=[".*"],
+            stiffness=None,
+            damping=None,
+        ),
+    },
+)
 """Configuration for the Mujoco Ant robot."""
 
 ROLLOPOD_B_ROLLING_CFG_V2 = ArticulationCfg(

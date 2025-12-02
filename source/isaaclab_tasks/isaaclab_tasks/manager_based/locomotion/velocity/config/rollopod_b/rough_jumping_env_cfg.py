@@ -19,7 +19,7 @@ from isaaclab.sensors import ContactSensorCfg, RayCasterCfg, patterns
 ##
 # Pre-defined configs
 ##
-from isaaclab_assets.robots.rollopod import ROLLOPOD_B_WALKING_CFG  # isort: skip
+from isaaclab_assets.robots.rollopod import ROLLOPOD_B_JUMPING_CFG  # isort: skip
 
 @configclass
 class JumpingRewards(RewardsCfg):
@@ -31,12 +31,18 @@ class JumpingRewards(RewardsCfg):
     undesired_contacts = None
     lin_vel_z_l2 = None
     track_pos_w_exp = RewTerm(
-        func=mdp.track_pos_w_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
+        func=mdp.track_pos_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
     )
     track_pos_w_exp_fine_grained = RewTerm(
-        func=mdp.track_pos_w_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
+        func=mdp.track_pos_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
     )
-    jump_vel_w_z_l2 = RewTerm(func=mdp.jump_vel_w_z_l2, weight=0.5)
+    #track_pos_binary = RewTerm(
+    #    func=mdp.track_pos_binary, weight=1.0, params={"command_name": "base_velocity", "threshold": 0.05}
+    #)
+    jump_success_terminal_latched = RewTerm(
+        func=mdp.jump_success_terminal_latched, weight=1.0, params={"command_name": "base_velocity"}
+    )
+    #jump_vel_w_z_l2 = RewTerm(func=mdp.jump_vel_w_z_l2, weight=0.5)
     # -- optional penalties
 
 @configclass
@@ -56,7 +62,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.episode_length_s = 10.0
         self.sim.gravity = (0.0, 0.0, -1.62)
         # switch robot to rollopod-b
-        self.scene.robot = ROLLOPOD_B_WALKING_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.robot = ROLLOPOD_B_JUMPING_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         self.scene.height_scanner.prim_path = "{ENV_REGEX_NS}/Robot/MainBody"
         self.scene.height_scanner.offset = RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.0))
         self.scene.height_scanner.pattern_cfg = patterns.GridPatternCfg(resolution=0.2, size=[1.0, 1.0])
@@ -67,7 +73,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             #rel_standing_envs=0.02,
             debug_vis=False,
             ranges=mdp.JumpingCommandCfg.Ranges(
-                pos_x=(0.0, 0.0), pos_y=(0.0, 0.0), pos_z=(1.0, 3.0)
+                pos_x=(0.0, 0.0), pos_y=(0.0, 0.0), pos_z=(0.6, 1.0)
             ),
         )
 
@@ -75,9 +81,9 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             asset_name="robot",
             joint_names=[".*"],
             scale={
-                ".*RevoluteJoint1": 0.3,
-                ".*RevoluteJoint2": 0.9,
-                ".*RevoluteJoint3": 0.9,
+                ".*RevoluteJoint1": 0.5,
+                ".*RevoluteJoint2": 0.5,
+                ".*RevoluteJoint3": 0.5,
             },
             use_default_offset=True
         )
@@ -130,9 +136,10 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
 
         # Rewards
         self.rewards.dof_torques_l2.weight = -0.1e-5
-        self.rewards.dof_acc_l2.weight = -1.5e-7
-        self.rewards.action_rate_l2.weight = -0.01
-        self.rewards.flat_orientation_l2.weight = -0.25
+        self.rewards.ang_vel_xy_l2.weight = -0.01
+        self.rewards.dof_acc_l2.weight = -1.0e-8
+        self.rewards.action_rate_l2.weight = -0.005
+        self.rewards.flat_orientation_l2.weight = -0.1
 
         self.terminations.base_contact.params = {"sensor_cfg": SceneEntityCfg("contact_forces", body_names="MainBody"), "threshold": 1.0}
 
