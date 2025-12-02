@@ -31,10 +31,10 @@ class JumpingRewards(RewardsCfg):
     undesired_contacts = None
     lin_vel_z_l2 = None
     track_pos_w_exp = RewTerm(
-        func=mdp.track_pos_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
+        func=mdp.track_pos_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
     )
     track_pos_w_exp_fine_grained = RewTerm(
-        func=mdp.track_pos_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(2.0)}
+        func=mdp.track_pos_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.2)}
     )
     #track_pos_binary = RewTerm(
     #    func=mdp.track_pos_binary, weight=1.0, params={"command_name": "base_velocity", "threshold": 0.05}
