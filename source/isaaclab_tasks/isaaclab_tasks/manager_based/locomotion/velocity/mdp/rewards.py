@@ -323,7 +323,7 @@ def track_pos_w_exp(
     # extract the used quantities (to enable type-hinting)
     asset: Articulation = env.scene[asset_cfg.name]
     # compute the error
-    pos_error = torch.square(torch.norm(env.command_manager.get_command(command_name) - asset.data.root_com_pos_w, dim=1))
+    pos_error = torch.square(torch.norm(env.command_manager.get_command(command_name) - asset.data.root_link_pos_w, dim=1))
     reward = torch.exp(-pos_error / std**2)
 
     vel_z = asset.data.root_com_lin_vel_b[:, 2]
@@ -337,7 +337,7 @@ def track_pos_exp(
     # extract the used quantities (to enable type-hinting)
     asset: Articulation = env.scene[asset_cfg.name]
     # compute the error
-    pos_error = torch.square(torch.norm(env.command_manager.get_command(command_name) - asset.data.root_com_pos_w, dim=1))
+    pos_error = torch.square(torch.norm(env.command_manager.get_command(command_name) - asset.data.root_link_pos_w, dim=1))
     reward = torch.exp(-pos_error / std**2)
     return reward
 
@@ -377,7 +377,7 @@ def jump_success_terminal_latched(
     A reward that returns 1.0 at the end of an episode if the target height is reached at least once during the episode.
     """
     robot = env.scene[asset_cfg.name]
-    current_height = robot.data.root_com_pos_w[:, 2]
+    current_height = robot.data.root_link_pos_w[:, 2]
     target_height = env.command_manager.get_command(command_name)[:, 2]
     # initialize the buffer for maintaining the state
     if not hasattr(env, "_jump_success_latch"):

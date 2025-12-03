@@ -81,9 +81,9 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             asset_name="robot",
             joint_names=[".*"],
             scale={
-                ".*RevoluteJoint1": 0.5,
-                ".*RevoluteJoint2": 0.5,
-                ".*RevoluteJoint3": 0.5,
+                ".*RevoluteJoint1": 0.8,
+                ".*RevoluteJoint2": 0.8,
+                ".*RevoluteJoint3": 0.8,
             },
             use_default_offset=True
         )
