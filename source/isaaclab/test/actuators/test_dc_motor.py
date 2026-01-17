@@ -12,8 +12,9 @@ simulation_app = AppLauncher(headless=HEADLESS).app
 
 """Rest of imports follows"""
 
-import pytest
 import torch
+
+import pytest
 
 from isaaclab.actuators import DCMotorCfg
 

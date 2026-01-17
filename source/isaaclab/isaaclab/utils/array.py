@@ -8,13 +8,13 @@
 # needed to import for allowing type-hinting: torch.device | str | None
 from __future__ import annotations
 
-from typing import Union
-
 import numpy as np
 import torch
+from typing import Union
+
 import warp as wp
 
-TensorData = Union[np.ndarray, torch.Tensor, wp.array]  # noqa: UP007
+TensorData = Union[np.ndarray, torch.Tensor, wp.array]
 """Type definition for a tensor data.
 
 Union of numpy, torch, and warp arrays.

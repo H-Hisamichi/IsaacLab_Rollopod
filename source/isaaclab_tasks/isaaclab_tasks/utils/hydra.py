@@ -5,6 +5,7 @@
 
 """Sub-module with utilities for the hydra configuration system."""
 
+
 import functools
 from collections.abc import Callable
 

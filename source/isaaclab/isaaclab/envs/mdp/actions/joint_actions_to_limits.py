@@ -6,10 +6,9 @@
 from __future__ import annotations
 
 import logging
+import torch
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
-
-import torch
 
 import isaaclab.utils.math as math_utils
 import isaaclab.utils.string as string_utils
@@ -191,9 +190,7 @@ class EMAJointPositionToLimitsAction(JointPositionToLimitsAction):
 
     .. math::
 
-        \text{applied action} =
-            \alpha \times \text{processed actions} +
-            (1 - \alpha) \times \text{previous applied action}
+        \text{applied action} = \alpha \times \text{processed actions} + (1 - \alpha) \times \text{previous applied action}
 
     where :math:`\alpha` is the weight for the moving average, :math:`\text{processed actions}` are the
     processed actions, and :math:`\text{previous action}` is the previous action that was applied to the articulation's

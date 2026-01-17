@@ -5,15 +5,14 @@
 
 """Shared test utilities for Isaac Lab environments."""
 
+import gymnasium as gym
 import inspect
 import os
-
-import gymnasium as gym
-import pytest
 import torch
 
 import carb
 import omni.usd
+import pytest
 
 from isaaclab.envs.utils.spaces import sample_space
 from isaaclab.utils.version import get_isaac_sim_version

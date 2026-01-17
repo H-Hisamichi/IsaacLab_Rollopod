@@ -14,10 +14,10 @@ simulation_app = AppLauncher(headless=True).app
 import os
 import shutil
 import tempfile
+import torch
 import uuid
 
 import pytest
-import torch
 
 from isaaclab.utils.datasets import EpisodeData, HDF5DatasetFileHandler
 

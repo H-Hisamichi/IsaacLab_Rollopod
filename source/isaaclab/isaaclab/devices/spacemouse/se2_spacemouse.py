@@ -7,14 +7,13 @@
 
 from __future__ import annotations
 
-import threading
-import time
-from collections.abc import Callable
-from dataclasses import dataclass
-
 import hid
 import numpy as np
+import threading
+import time
 import torch
+from collections.abc import Callable
+from dataclasses import dataclass
 
 from isaaclab.utils.array import convert_to_torch
 

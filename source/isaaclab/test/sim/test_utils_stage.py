@@ -18,7 +18,6 @@ import tempfile
 from pathlib import Path
 
 import pytest
-
 from pxr import Usd
 
 import isaaclab.sim as sim_utils

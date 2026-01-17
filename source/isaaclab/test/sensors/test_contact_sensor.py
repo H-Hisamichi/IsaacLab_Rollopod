@@ -14,14 +14,13 @@ simulation_app = AppLauncher(headless=True).app
 
 """Rest everything follows."""
 
+import torch
 from dataclasses import MISSING
 from enum import Enum
 
-import pytest
-import torch
-from flaky import flaky
-
 import carb
+import pytest
+from flaky import flaky
 from pxr import PhysxSchema
 
 import isaaclab.sim as sim_utils
@@ -434,9 +433,9 @@ def test_contact_sensor_threshold(setup_simulation, device):
             threshold_attr = cr_api.GetThresholdAttr()
             if threshold_attr.IsValid():
                 threshold_value = threshold_attr.Get()
-                assert pytest.approx(threshold_value, abs=1e-6) == 0.0, (
-                    f"Expected USD threshold to be close to 0.0, but got {threshold_value}"
-                )
+                assert (
+                    pytest.approx(threshold_value, abs=1e-6) == 0.0
+                ), f"Expected USD threshold to be close to 0.0, but got {threshold_value}"
 
 
 # minor gravity force in -z to ensure object stays on ground plane

@@ -209,7 +209,6 @@ Env to Replay Sim2Lab Demonstrations with JointSpaceAction
 
 
 class RmpFlowAgibotPlaceToy2BoxEnvCfg(PlaceToy2BoxEnvCfg):
-    """Configuration for the Agibot Place Toy2Box RMP Rel Environment."""
 
     def __post_init__(self):
         # post init of parent

@@ -42,7 +42,6 @@ simulation_app = SimulationApp({"headless": args_cli.headless})
 
 import logging
 import os
-
 import torch
 
 import isaacsim.core.utils.nucleus as nucleus_utils

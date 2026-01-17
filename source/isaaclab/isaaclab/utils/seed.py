@@ -3,11 +3,11 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
+import numpy as np
 import os
 import random
-
-import numpy as np
 import torch
+
 import warp as wp
 
 

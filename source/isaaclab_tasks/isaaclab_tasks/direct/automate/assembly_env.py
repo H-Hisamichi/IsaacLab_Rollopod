@@ -4,14 +4,13 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import json
-import os
-
 import numpy as np
+import os
 import torch
-import warp as wp
 
 import carb
 import isaacsim.core.utils.torch as torch_utils
+import warp as wp
 
 import isaaclab.sim as sim_utils
 from isaaclab.assets import Articulation, RigidObject
@@ -32,6 +31,7 @@ class AssemblyEnv(DirectRLEnv):
     cfg: AssemblyEnvCfg
 
     def __init__(self, cfg: AssemblyEnvCfg, render_mode: str | None = None, **kwargs):
+
         # Update number of obs/states
         cfg.observation_space = sum([OBS_DIM_CFG[obs] for obs in cfg.obs_order])
         cfg.state_space = sum([STATE_DIM_CFG[state] for state in cfg.state_order])
@@ -71,6 +71,7 @@ class AssemblyEnv(DirectRLEnv):
             self._init_eval_logging()
 
     def _init_eval_logging(self):
+
         self.held_asset_pose_log = torch.empty(
             (0, 7), dtype=torch.float32, device=self.device
         )  # (position, quaternion)
@@ -551,6 +552,7 @@ class AssemblyEnv(DirectRLEnv):
             rew_buf *= sbc_rwd_scale
 
             if self.cfg_task.if_sbc:
+
                 self.curr_max_disp = automate_algo.get_new_max_disp(
                     curr_success=torch.count_nonzero(self.ep_succeeded) / self.num_envs,
                     cfg_task=self.cfg_task,
@@ -748,6 +750,7 @@ class AssemblyEnv(DirectRLEnv):
         self._compute_intermediate_values(dt=self.physics_dt)
 
     def randomize_fixed_initial_state(self, env_ids):
+
         # (1.) Randomize fixed asset pose.
         fixed_state = self._fixed_asset.data.default_root_state.clone()[env_ids]
         # (1.a.) Position
@@ -785,6 +788,7 @@ class AssemblyEnv(DirectRLEnv):
         self.step_sim_no_action()
 
     def randomize_held_initial_state(self, env_ids, pre_grasp):
+
         curr_curriculum_disp_range = self.curriculum_height_bound[:, 1] - self.curr_max_disp
         if pre_grasp:
             self.curriculum_disp = self.curr_max_disp + curr_curriculum_disp_range * (

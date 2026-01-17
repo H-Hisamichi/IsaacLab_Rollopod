@@ -5,9 +5,8 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import torch
+from typing import TYPE_CHECKING
 
 from isaaclab.assets import Articulation, RigidObject
 from isaaclab.managers import ManagerTermBase, SceneEntityCfg

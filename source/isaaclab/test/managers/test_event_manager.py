@@ -7,7 +7,6 @@
 # pyright: reportPrivateUsage=none
 
 """Launch Isaac Sim Simulator first."""
-
 from collections.abc import Sequence
 
 from isaaclab.app import AppLauncher
@@ -18,10 +17,10 @@ simulation_app = AppLauncher(headless=True).app
 """Rest everything follows."""
 
 
+import torch
 from collections import namedtuple
 
 import pytest
-import torch
 
 from isaaclab.envs import ManagerBasedEnv
 from isaaclab.managers import EventManager, EventTermCfg, ManagerTermBase, ManagerTermBaseCfg

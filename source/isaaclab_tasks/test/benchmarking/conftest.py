@@ -5,10 +5,8 @@
 
 import json
 
+import env_benchmark_test_utils as utils
 import pytest
-
-# Local imports should be imported last
-import env_benchmark_test_utils as utils  # isort: skip
 
 # Global variable for storing KPI data
 GLOBAL_KPI_STORE = {}

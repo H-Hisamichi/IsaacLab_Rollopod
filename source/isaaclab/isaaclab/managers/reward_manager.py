@@ -7,11 +7,10 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import TYPE_CHECKING
-
 import torch
+from collections.abc import Sequence
 from prettytable import PrettyTable
+from typing import TYPE_CHECKING
 
 from .manager_base import ManagerBase, ManagerTermBase
 from .manager_term_cfg import RewardTermCfg

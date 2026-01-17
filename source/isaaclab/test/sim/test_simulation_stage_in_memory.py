@@ -16,11 +16,10 @@ simulation_app = AppLauncher(headless=True, enable_cameras=True).app
 """Rest everything follows."""
 
 
-import pytest
-
 import omni
 import omni.physx
 import omni.usd
+import pytest
 import usdrt
 from isaacsim.core.cloner import GridCloner
 
@@ -71,35 +70,12 @@ def test_stage_in_memory_with_shapes(sim):
                 sim_utils.ConeCfg(
                     radius=0.3,
                     height=0.6,
-                    visual_material=sim_utils.PreviewSurfaceCfg(diffuse_color=(0.0, 1.0, 0.0)),
-                    physics_material=sim_utils.RigidBodyMaterialCfg(
-                        friction_combine_mode="multiply",
-                        restitution_combine_mode="multiply",
-                        static_friction=1.0,
-                        dynamic_friction=1.0,
-                    ),
                 ),
-                sim_utils.MeshCuboidCfg(
+                sim_utils.CuboidCfg(
                     size=(0.3, 0.3, 0.3),
-                    visual_material=sim_utils.MdlFileCfg(
-                        mdl_path=f"{ISAACLAB_NUCLEUS_DIR}/Materials/TilesMarbleSpiderWhiteBrickBondHoned/TilesMarbleSpiderWhiteBrickBondHoned.mdl",
-                        project_uvw=True,
-                        texture_scale=(0.25, 0.25),
-                    ),
                 ),
                 sim_utils.SphereCfg(
                     radius=0.3,
-                    visual_material=sim_utils.MdlFileCfg(
-                        mdl_path=f"{ISAACLAB_NUCLEUS_DIR}/Materials/TilesMarbleSpiderWhiteBrickBondHoned/TilesMarbleSpiderWhiteBrickBondHoned.mdl",
-                        project_uvw=True,
-                        texture_scale=(0.25, 0.25),
-                    ),
-                    physics_material=sim_utils.RigidBodyMaterialCfg(
-                        friction_combine_mode="multiply",
-                        restitution_combine_mode="multiply",
-                        static_friction=1.0,
-                        dynamic_friction=1.0,
-                    ),
                 ),
             ],
             random_choice=True,

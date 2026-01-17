@@ -3,9 +3,8 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
-import weakref
-
 import torch
+import weakref
 
 import omni.physics.tensors.impl.api as physx
 

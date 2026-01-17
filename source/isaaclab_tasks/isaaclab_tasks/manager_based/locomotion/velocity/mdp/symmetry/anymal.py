@@ -8,10 +8,9 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import torch
 from tensordict import TensorDict
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedRLEnv

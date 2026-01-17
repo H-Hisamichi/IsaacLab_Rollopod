@@ -23,7 +23,6 @@ simulation_app = AppLauncher(headless=True).app
 
 import argparse
 import os
-
 import trimesh
 
 import isaaclab.terrains.trimesh as mesh_gen

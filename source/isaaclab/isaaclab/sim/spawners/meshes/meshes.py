@@ -5,11 +5,10 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import numpy as np
 import trimesh
 import trimesh.transformations
+from typing import TYPE_CHECKING
 
 from pxr import Usd, UsdPhysics
 

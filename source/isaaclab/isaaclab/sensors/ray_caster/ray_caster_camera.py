@@ -6,10 +6,9 @@
 from __future__ import annotations
 
 import logging
+import torch
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, ClassVar, Literal
-
-import torch
 
 from pxr import UsdGeom
 
@@ -409,8 +408,7 @@ class RayCasterCamera(RayCaster):
         """Obtains the pose of the view the camera is attached to in the world frame.
 
         .. deprecated v2.3.1:
-            This function will be removed in a future release in favor of implementation
-            :meth:`obtain_world_pose_from_view`.
+            This function will be removed in a future release in favor of implementation :meth:`obtain_world_pose_from_view`.
 
         Returns:
             A tuple of the position (in meters) and quaternion (w, x, y, z).
@@ -436,9 +434,7 @@ class RayCasterCamera(RayCaster):
             .. code-block:: python
 
                 pos_w, quat_w = obtain_world_pose_from_view(self._view, env_ids, clone=True)
-                pos_w, quat_w = math_utils.combine_frame_transforms(
-                    pos_w, quat_w, self._offset_pos[env_ids], self._offset_quat[env_ids]
-                )
+                pos_w, quat_w = math_utils.combine_frame_transforms(pos_w, quat_w, self._offset_pos[env_ids],  self._offset_quat[env_ids])
 
         Returns:
             A tuple of the position (in meters) and quaternion (w, x, y, z) in "world" convention.

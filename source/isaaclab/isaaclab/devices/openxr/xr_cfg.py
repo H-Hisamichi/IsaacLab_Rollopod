@@ -9,9 +9,8 @@
 from __future__ import annotations
 
 import enum
-from collections.abc import Callable
-
 import numpy as np
+from collections.abc import Callable
 
 from isaaclab.utils import configclass
 

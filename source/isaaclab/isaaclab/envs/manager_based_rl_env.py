@@ -6,13 +6,12 @@
 # needed to import for allowing type-hinting: np.ndarray | None
 from __future__ import annotations
 
-import math
-from collections.abc import Sequence
-from typing import Any, ClassVar
-
 import gymnasium as gym
+import math
 import numpy as np
 import torch
+from collections.abc import Sequence
+from typing import Any, ClassVar
 
 from isaaclab.managers import CommandManager, CurriculumManager, RewardManager, TerminationManager
 from isaaclab.ui.widgets import ManagerLiveVisualizer
@@ -82,8 +81,7 @@ class ManagerBasedRLEnv(ManagerBasedEnv, gym.Env):
         self.render_mode = render_mode
 
         # initialize data and constants
-        # -- set the framerate of the gym video recorder wrapper so that the playback speed of the
-        #    produced video matches the simulation
+        # -- set the framerate of the gym video recorder wrapper so that the playback speed of the produced video matches the simulation
         self.metadata["render_fps"] = 1 / self.step_dt
 
         print("[INFO]: Completed setting up the environment...")

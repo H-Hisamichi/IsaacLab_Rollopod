@@ -4,7 +4,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 """Data container for the multi-mesh ray-cast camera sensor."""
-
 import torch
 
 from isaaclab.sensors.camera import CameraData

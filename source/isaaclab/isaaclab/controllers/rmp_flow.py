@@ -3,9 +3,8 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
-from dataclasses import MISSING
-
 import torch
+from dataclasses import MISSING
 
 from isaacsim.core.api.simulation_context import SimulationContext
 from isaacsim.core.prims import SingleArticulation

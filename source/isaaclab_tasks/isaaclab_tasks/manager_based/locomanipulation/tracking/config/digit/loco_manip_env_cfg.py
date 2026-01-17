@@ -5,10 +5,13 @@
 
 import math
 
-from isaaclab.managers import EventTermCfg, SceneEntityCfg
+from isaaclab_assets.robots.agility import ARM_JOINT_NAMES, LEG_JOINT_NAMES
+
+from isaaclab.managers import EventTermCfg
 from isaaclab.managers import ObservationGroupCfg as ObsGroup
 from isaaclab.managers import ObservationTermCfg as ObsTerm
 from isaaclab.managers import RewardTermCfg as RewTerm
+from isaaclab.managers import SceneEntityCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 
@@ -16,8 +19,6 @@ import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp
 import isaaclab_tasks.manager_based.manipulation.reach.mdp as manipulation_mdp
 from isaaclab_tasks.manager_based.locomotion.velocity.config.digit.rough_env_cfg import DigitRewards, DigitRoughEnvCfg
 from isaaclab_tasks.manager_based.locomotion.velocity.velocity_env_cfg import EventCfg
-
-from isaaclab_assets.robots.agility import ARM_JOINT_NAMES, LEG_JOINT_NAMES
 
 
 @configclass
@@ -89,7 +90,6 @@ class DigitLocoManipRewards(DigitRewards):
 
 @configclass
 class DigitLocoManipObservations:
-    """Configuration for the Digit Locomanipulation environment."""
 
     @configclass
     class PolicyCfg(ObsGroup):
@@ -236,6 +236,7 @@ class DigitLocoManipEnvCfg(DigitRoughEnvCfg):
 
 
 class DigitLocoManipEnvCfg_PLAY(DigitLocoManipEnvCfg):
+
     def __post_init__(self) -> None:
         super().__post_init__()
 

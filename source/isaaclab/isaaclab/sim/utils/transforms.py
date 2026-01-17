@@ -116,7 +116,7 @@ def standardize_xform_ops(
         ...     prim,
         ...     translation=(1.0, 2.0, 3.0),
         ...     orientation=(1.0, 0.0, 0.0, 0.0),  # identity rotation (w, x, y, z)
-        ...     scale=(2.0, 2.0, 2.0),
+        ...     scale=(2.0, 2.0, 2.0)
         ... )
         >>>
         >>> # Batch processing for performance
@@ -130,11 +130,7 @@ def standardize_xform_ops(
 
     # Check if prim is an Xformable
     if not prim.IsA(UsdGeom.Xformable):
-        logger.error(
-            f"Prim at path '{prim.GetPath().pathString}' is of type '{prim.GetTypeName()}', "
-            "which is not an Xformable. Transform operations will not be standardized. "
-            "This is expected for material, shader, and scope prims."
-        )
+        logger.error(f"Prim at path '{prim.GetPath()}' is not an Xformable.")
         return False
 
     # Create xformable interface
@@ -394,8 +390,7 @@ def convert_world_pose_to_local(
         A tuple of (local_translation, local_orientation) where:
 
         - local_translation is a tuple of (x, y, z) in local space relative to ref_prim
-        - local_orientation is a tuple of (w, x, y, z) in local space relative to ref_prim,
-          or None if no orientation was provided
+        - local_orientation is a tuple of (w, x, y, z) in local space relative to ref_prim, or None if no orientation was provided
 
     Raises:
         ValueError: If the reference prim is not a valid USD prim.
@@ -411,7 +406,9 @@ def convert_world_pose_to_local(
         >>> # Convert world pose to local (relative to ref_prim)
         >>> world_pos = (10.0, 5.0, 0.0)
         >>> world_quat = (1.0, 0.0, 0.0, 0.0)  # identity rotation
-        >>> local_pos, local_quat = sim_utils.convert_world_pose_to_local(world_pos, world_quat, ref_prim)
+        >>> local_pos, local_quat = sim_utils.convert_world_pose_to_local(
+        ...     world_pos, world_quat, ref_prim
+        ... )
         >>> print(f"Local position: {local_pos}")
         >>> print(f"Local orientation: {local_quat}")
     """

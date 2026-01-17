@@ -6,10 +6,9 @@
 from __future__ import annotations
 
 import logging
+import torch
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
-
-import torch
 
 import isaaclab.utils.math as math_utils
 import isaaclab.utils.string as string_utils
@@ -27,7 +26,6 @@ logger = logging.getLogger(__name__)
 
 
 class RMPFlowAction(ActionTerm):
-    """RMPFlow task space action term."""
 
     cfg: rmpflow_actions_cfg.RMPFlowActionCfg
     """The configuration of the action term."""

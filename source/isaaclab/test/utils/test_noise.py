@@ -12,8 +12,9 @@ simulation_app = AppLauncher(headless=True).app
 
 """Rest everything follows."""
 
-import pytest
 import torch
+
+import pytest
 
 import isaaclab.utils.noise as noise
 

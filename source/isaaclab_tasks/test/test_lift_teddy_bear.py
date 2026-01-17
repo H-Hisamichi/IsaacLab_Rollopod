@@ -7,8 +7,7 @@
 
 import sys
 
-# Import pinocchio in the main script to force the use of the dependencies
-# installed by IsaacLab and not the one installed by Isaac Sim.
+# Import pinocchio in the main script to force the use of the dependencies installed by IsaacLab and not the one installed by Isaac Sim
 # pinocchio is required by the Pink IK controller
 if sys.platform != "win32":
     import pinocchio  # noqa: F401
@@ -24,11 +23,9 @@ simulation_app = app_launcher.app
 """Rest everything follows."""
 
 import pytest
+from env_test_utils import _run_environments
 
 import isaaclab_tasks  # noqa: F401
-
-# Local imports should be imported last
-from env_test_utils import _run_environments  # isort: skip
 
 
 @pytest.mark.parametrize("num_envs, device", [(32, "cuda"), (1, "cuda")])

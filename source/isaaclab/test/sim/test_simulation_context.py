@@ -12,12 +12,11 @@ simulation_app = AppLauncher(headless=True).app
 
 """Rest everything follows."""
 
+import numpy as np
 from collections.abc import Generator
 
-import numpy as np
-import pytest
-
 import omni.physx
+import pytest
 from isaacsim.core.api.simulation_context import SimulationContext as IsaacSimulationContext
 
 import isaaclab.sim as sim_utils

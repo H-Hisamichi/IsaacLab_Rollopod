@@ -13,16 +13,15 @@ from isaaclab.app import AppLauncher
 # launch omniverse app
 simulation_app = AppLauncher(headless=True).app
 
-import pytest
-
 import omni
+import pytest
 from isaacsim.core.cloner import GridCloner
+
+from isaaclab_assets import ANYMAL_D_CFG, CARTPOLE_CFG
 
 from isaaclab.assets import Articulation
 from isaaclab.sim import build_simulation_context
 from isaaclab.utils.timer import Timer
-
-from isaaclab_assets import ANYMAL_D_CFG, CARTPOLE_CFG
 
 
 @pytest.mark.parametrize(

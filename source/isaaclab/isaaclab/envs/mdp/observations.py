@@ -11,9 +11,8 @@ the observation introduced by the function.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import torch
+from typing import TYPE_CHECKING
 
 import isaaclab.utils.math as math_utils
 from isaaclab.assets import Articulation, RigidObject

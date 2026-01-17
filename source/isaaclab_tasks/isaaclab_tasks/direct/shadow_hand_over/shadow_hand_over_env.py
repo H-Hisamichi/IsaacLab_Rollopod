@@ -6,10 +6,9 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-
 import numpy as np
 import torch
+from collections.abc import Sequence
 
 import isaaclab.sim as sim_utils
 from isaaclab.assets import Articulation, RigidObject

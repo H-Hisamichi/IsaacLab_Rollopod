@@ -8,13 +8,15 @@ from dataclasses import MISSING
 
 from isaaclab.managers import CommandTermCfg
 from isaaclab.markers import VisualizationMarkersCfg
-from isaaclab.markers.config import BLUE_ARROW_X_MARKER_CFG, FRAME_MARKER_CFG, GREEN_ARROW_X_MARKER_CFG
+from isaaclab.markers.config import BLUE_ARROW_X_MARKER_CFG, FRAME_MARKER_CFG, GREEN_ARROW_X_MARKER_CFG, SPHERE_MARKER_CFG
 from isaaclab.utils import configclass
 
 from .null_command import NullCommand
 from .pose_2d_command import TerrainBasedPose2dCommand, UniformPose2dCommand
 from .pose_command import UniformPoseCommand
 from .velocity_command import NormalVelocityCommand, UniformVelocityCommand
+from .rolling_command import UniformWorldVelocityCommand, UniformPosition2dCommand
+from .jumping_command import JumpingCommand
 
 
 @configclass
@@ -246,3 +248,133 @@ class TerrainBasedPose2dCommandCfg(UniformPose2dCommandCfg):
 
     ranges: Ranges = MISSING
     """Distribution ranges for the sampled commands."""
+
+# rollopod
+
+@configclass
+class UniformWorldVelocityCommandCfg(CommandTermCfg):
+    """Configuration for the uniform velocity command generator."""
+
+    class_type: type = UniformWorldVelocityCommand
+
+    asset_name: str = MISSING
+    """Name of the asset in the environment for which the commands are generated."""
+
+    rel_standing_envs: float = 0.0
+    """The sampled probability of environments that should be standing still. Defaults to 0.0."""
+
+    robot_radius: float = 0.43
+    """The radius of the robot in rolling mode (in m). Defaults to 0.43."""
+
+    @configclass
+    class Ranges:
+        """Uniform distribution ranges for the velocity commands."""
+
+        #lin_vel_x: tuple[float, float] = MISSING
+        """Range for the linear-x velocity command (in m/s)."""
+
+        #lin_vel_y: tuple[float, float] = MISSING
+        """Range for the linear-y velocity command (in m/s)."""
+
+        rolling_speed: tuple[float, float] = MISSING
+        """Range for the rolling speed command (in rad/s)."""
+
+        heading: tuple[float, float] | None = None
+        """Range for the heading command (in rad). Defaults to None."""
+
+    ranges: Ranges = MISSING
+    """Distribution ranges for the velocity commands."""
+
+    goal_vel_visualizer_cfg: VisualizationMarkersCfg = GREEN_ARROW_X_MARKER_CFG.replace(
+        prim_path="/Visuals/Command/velocity_goal"
+    )
+    """The configuration for the goal velocity visualization marker. Defaults to GREEN_ARROW_X_MARKER_CFG."""
+
+    current_vel_visualizer_cfg: VisualizationMarkersCfg = BLUE_ARROW_X_MARKER_CFG.replace(
+        prim_path="/Visuals/Command/velocity_current"
+    )
+    """The configuration for the current velocity visualization marker. Defaults to BLUE_ARROW_X_MARKER_CFG."""
+
+    # Set the scale of the visualization markers to (0.5, 0.5, 0.5)
+    goal_vel_visualizer_cfg.markers["arrow"].scale = (0.5, 0.5, 0.5)
+    current_vel_visualizer_cfg.markers["arrow"].scale = (0.5, 0.5, 0.5)
+
+@configclass
+class JumpingCommandCfg(CommandTermCfg):
+    """Configuration for the uniform 2D-pose command generator."""
+
+    class_type: type = JumpingCommand
+
+    asset_name: str = MISSING
+    """Name of the asset in the environment for which the commands are generated."""
+
+    rel_standing_envs: float = 0.0
+    """The sampled probability of environments that should be standing still. Defaults to 0.0."""
+
+    @configclass
+    class Ranges:
+        """Uniform distribution ranges for the velocity commands."""
+
+        pos_x: tuple[float, float] = MISSING
+        """Range for the x position (in m)."""
+
+        pos_y: tuple[float, float] = MISSING
+        """Range for the y position (in m)."""
+
+        lin_vel_z: tuple[float, float] = MISSING
+        """Range for the z linear velocity (in m/s)."""
+
+    ranges: Ranges = MISSING
+    """Distribution ranges for the velocity commands."""
+
+    goal_pose_visualizer_cfg: VisualizationMarkersCfg = SPHERE_MARKER_CFG.replace(
+        prim_path="/Visuals/Command/pos_goal"
+    )
+    """The configuration for the goal velocity visualization marker. Defaults to GREEN_ARROW_X_MARKER_CFG."""
+
+    current_vel_visualizer_cfg: VisualizationMarkersCfg = BLUE_ARROW_X_MARKER_CFG.replace(
+        prim_path="/Visuals/Command/velocity_current"
+    )
+    """The configuration for the current velocity visualization marker. Defaults to BLUE_ARROW_X_MARKER_CFG."""
+
+    # Set the scale of the visualization markers to (0.5, 0.5, 0.5)
+    #goal_pose_visualizer_cfg.markers["sphere"].scale = (0.5, 0.5, 0.5)
+    current_vel_visualizer_cfg.markers["arrow"].scale = (0.5, 0.5, 0.5)
+
+class UniformPosition2dCommandCfg(CommandTermCfg):
+    """Configuration for the uniform 2D-pose command generator."""
+
+    class_type: type = UniformPosition2dCommand
+
+
+    asset_name: str = MISSING
+    """Name of the asset in the environment for which the commands are generated."""
+
+    @configclass
+    class Ranges:
+        """Uniform distribution ranges for the position commands."""
+
+        pos_x: tuple[float, float] = MISSING
+        """Range for the x position (in m)."""
+
+        pos_y: tuple[float, float] = MISSING
+        """Range for the y position (in m)."""
+
+        pos_z: tuple[float, float] = MISSING
+        """Range for the z position (in m)."""
+
+
+    ranges: Ranges = MISSING
+    """Distribution ranges for the position commands."""
+
+    goal_pose_visualizer_cfg: VisualizationMarkersCfg = GREEN_ARROW_X_MARKER_CFG.replace(
+        prim_path="/Visuals/Command/pose_goal"
+    )
+    """The configuration for the goal pose visualization marker. Defaults to GREEN_ARROW_X_MARKER_CFG."""
+
+    # Set the scale of the visualization markers to (0.2, 0.2, 0.8)
+    goal_pose_visualizer_cfg.markers["arrow"].scale = (0.2, 0.2, 0.8)
+    goal_pose_visualizer_cfg: VisualizationMarkersCfg = SPHERE_MARKER_CFG.replace(
+        prim_path="/Visuals/Command/pose_goal"
+    )
+    """The configuration for the goal pose visualization marker. Defaults to GREEN_ARROW_X_MARKER_CFG."""

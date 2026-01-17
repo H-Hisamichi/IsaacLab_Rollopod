@@ -31,7 +31,6 @@ simulation_app = SimulationApp({"headless": args_cli.headless})
 """Rest everything follows."""
 
 import logging
-
 import torch
 
 import isaacsim.core.utils.nucleus as nucleus_utils

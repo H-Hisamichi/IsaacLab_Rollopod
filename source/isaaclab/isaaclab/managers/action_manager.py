@@ -9,13 +9,12 @@ from __future__ import annotations
 
 import inspect
 import re
+import torch
 import weakref
 from abc import abstractmethod
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any
-
-import torch
 from prettytable import PrettyTable
+from typing import TYPE_CHECKING, Any
 
 import omni.kit.app
 

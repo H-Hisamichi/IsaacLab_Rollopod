@@ -7,8 +7,7 @@
 
 import sys
 
-# Import pinocchio in the main script to force the use of the dependencies
-# installed by IsaacLab and not the one installed by Isaac Sim.
+# Import pinocchio in the main script to force the use of the dependencies installed by IsaacLab and not the one installed by Isaac Sim
 # pinocchio is required by the Pink IK controller
 if sys.platform != "win32":
     import pinocchio  # noqa: F401
@@ -24,12 +23,9 @@ from isaaclab.utils.version import get_isaac_sim_version
 """Rest everything follows."""
 
 import pytest
+from env_test_utils import _run_environments, setup_environment
 
 import isaaclab_tasks  # noqa: F401
-
-# Local imports should be imported last
-from env_test_utils import _run_environments, setup_environment  # isort: skip
-
 
 # note, running an env test without stage in memory then
 # running an env test with stage in memory causes IsaacLab to hang.

@@ -14,8 +14,9 @@ simulation_app = AppLauncher(headless=True).app
 
 """Rest everything follows."""
 
-import pytest
 from packaging.version import Version
+
+import pytest
 
 from isaaclab.utils.version import compare_versions, get_isaac_sim_version
 

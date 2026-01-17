@@ -4,11 +4,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from dataclasses import dataclass
-from typing import Any
-
 import numpy as np
 import torch
+from dataclasses import dataclass
+from typing import Any
 
 from curobo.cuda_robot_model.cuda_robot_model import CudaRobotModelState
 from curobo.geom.sdf.world import CollisionCheckerType

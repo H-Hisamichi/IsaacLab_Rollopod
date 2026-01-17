@@ -6,9 +6,10 @@
 from __future__ import annotations
 
 import math
+import torch
 from collections.abc import Sequence
 
-import torch
+from isaaclab_assets.robots.cartpole import CARTPOLE_CFG
 
 import isaaclab.sim as sim_utils
 from isaaclab.assets import Articulation, ArticulationCfg
@@ -18,8 +19,6 @@ from isaaclab.sensors import TiledCamera, TiledCameraCfg, save_images_to_file
 from isaaclab.sim import SimulationCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.math import sample_uniform
-
-from isaaclab_assets.robots.cartpole import CARTPOLE_CFG
 
 
 @configclass
@@ -92,7 +91,6 @@ class CartpoleDepthCameraEnvCfg(CartpoleRGBCameraEnvCfg):
 
 
 class CartpoleCameraEnv(DirectRLEnv):
-    """Cartpole Camera Environment."""
 
     cfg: CartpoleRGBCameraEnvCfg | CartpoleDepthCameraEnvCfg
 

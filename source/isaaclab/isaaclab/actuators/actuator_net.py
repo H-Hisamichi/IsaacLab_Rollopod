@@ -14,10 +14,9 @@ Currently, the following models are supported:
 
 from __future__ import annotations
 
+import torch
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
-
-import torch
 
 from isaaclab.utils.assets import read_file
 from isaaclab.utils.types import ArticulationActions

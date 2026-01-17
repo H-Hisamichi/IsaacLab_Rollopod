@@ -36,7 +36,6 @@ simulation_app = SimulationApp({"headless": True})
 import ctypes
 import gc
 import logging
-
 import torch  # noqa: F401
 
 import isaacsim.core.utils.nucleus as nucleus_utils

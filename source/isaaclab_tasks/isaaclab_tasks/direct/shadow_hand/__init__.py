@@ -51,9 +51,7 @@ gym.register(
     },
 )
 
-# -------
-# Vision
-# -------
+### Vision
 
 gym.register(
     id="Isaac-Repose-Cube-Shadow-Vision-Direct-v0",

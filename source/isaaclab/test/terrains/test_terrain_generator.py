@@ -12,12 +12,12 @@ simulation_app = AppLauncher(headless=True).app
 
 """Rest everything follows."""
 
+import numpy as np
 import os
 import shutil
-
-import numpy as np
-import pytest
 import torch
+
+import pytest
 
 from isaaclab.terrains import FlatPatchSamplingCfg, TerrainGenerator, TerrainGeneratorCfg
 from isaaclab.terrains.config.rough import ROUGH_TERRAINS_CFG

@@ -7,5 +7,4 @@
 # Configuration for different assets.
 ##
 
-from .gelsight import *
 from .velodyne import *

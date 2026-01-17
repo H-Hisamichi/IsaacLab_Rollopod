@@ -4,9 +4,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 from __future__ import annotations
 
-from collections.abc import Sequence
-
 import torch
+from collections.abc import Sequence
 
 from isaaclab.managers.recorder_manager import RecorderTerm
 

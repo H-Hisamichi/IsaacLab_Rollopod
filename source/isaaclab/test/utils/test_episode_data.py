@@ -11,8 +11,9 @@ simulation_app = AppLauncher(headless=True).app
 
 """Rest everything follows from here."""
 
-import pytest
 import torch
+
+import pytest
 
 from isaaclab.utils.datasets import EpisodeData
 

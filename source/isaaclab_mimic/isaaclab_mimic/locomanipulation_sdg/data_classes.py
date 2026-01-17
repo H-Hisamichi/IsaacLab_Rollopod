@@ -3,9 +3,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from dataclasses import dataclass
-
 import torch
+from dataclasses import dataclass
 
 
 @dataclass
@@ -36,9 +35,7 @@ class LocomanipulationSDGInputData:
 
 @dataclass
 class LocomanipulationSDGOutputData:
-    """A container for data that is recorded during locomanipulation replay.
-    This is the final output of the pipeline.
-    """
+    """A container for data that is recorded during locomanipulation replay.  This is the final output of the pipeline"""
 
     left_hand_pose_target: torch.Tensor | None = None
     """The left hand's target pose."""

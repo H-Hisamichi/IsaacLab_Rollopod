@@ -7,20 +7,15 @@ from __future__ import annotations
 
 import math
 import re
-from typing import TYPE_CHECKING
 
-from packaging.version import Version
-
+import isaacsim
 import omni.kit.app
 import omni.kit.commands
-
-from isaaclab.utils.version import get_isaac_sim_version
+import omni.usd
+from isaacsim.core.utils.extensions import enable_extension
 
 from .asset_converter_base import AssetConverterBase
 from .urdf_converter_cfg import UrdfConverterCfg
-
-if TYPE_CHECKING:
-    import isaacsim.asset.importer.urdf
 
 
 class UrdfConverter(AssetConverterBase):
@@ -37,17 +32,7 @@ class UrdfConverter(AssetConverterBase):
 
     .. note::
         From Isaac Sim 4.5 onwards, the extension name changed from ``omni.importer.urdf`` to
-        ``isaacsim.asset.importer.urdf``.
-
-    .. note::
-        In Isaac Sim 5.1, the URDF importer changed the default behavior of merging fixed joints.
-        Links connected through ``fixed_joint`` elements are no longer merged when their URDF link
-        entries specify mass and inertia, even if ``merge-joint`` is set to True. The new behavior
-        treats links with mass/inertia as full bodies rather than zero-mass reference frames.
-
-        To maintain backwards compatibility, **this converter pins to an older version of the
-        URDF importer extension** (version 2.4.31) that still merges fixed joints by default.
-        This allows existing URDFs to work as expected without modification.
+        ``isaacsim.asset.importer.urdf``. This converter class now uses the latest extension from Isaac Sim.
 
     .. _isaacsim.asset.importer.urdf: https://docs.isaacsim.omniverse.nvidia.com/latest/importer_exporter/ext_isaacsim_asset_importer_urdf.html
     """
@@ -61,13 +46,9 @@ class UrdfConverter(AssetConverterBase):
         Args:
             cfg: The configuration instance for URDF to USD conversion.
         """
-        # switch to older version of the URDF importer extension
-        if get_isaac_sim_version() >= Version("5.1"):
-            manager = omni.kit.app.get_app().get_extension_manager()
-            if not manager.is_extension_enabled("isaacsim.asset.importer.urdf-2.4.31"):
-                manager.set_extension_enabled_immediate("isaacsim.asset.importer.urdf-2.4.31", True)
-
-        # acquire the URDF interface
+        manager = omni.kit.app.get_app().get_extension_manager()
+        if not manager.is_extension_enabled("isaacsim.asset.importer.urdf-2.4.31"):
+            enable_extension("isaacsim.asset.importer.urdf-2.4.31")
         from isaacsim.asset.importer.urdf._urdf import acquire_urdf_interface
 
         self._urdf_interface = acquire_urdf_interface()
@@ -114,7 +95,7 @@ class UrdfConverter(AssetConverterBase):
     Helper methods.
     """
 
-    def _get_urdf_import_config(self) -> isaacsim.asset.importer.urdf._urdf.ImportConfig:
+    def _get_urdf_import_config(self) -> isaacsim.asset.importer.urdf.ImportConfig:
         """Create and fill URDF ImportConfig with desired settings
 
         Returns:

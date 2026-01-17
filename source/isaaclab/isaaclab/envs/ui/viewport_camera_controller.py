@@ -6,12 +6,11 @@
 from __future__ import annotations
 
 import copy
+import numpy as np
+import torch
 import weakref
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
-
-import numpy as np
-import torch
 
 import omni.kit.app
 import omni.timeline

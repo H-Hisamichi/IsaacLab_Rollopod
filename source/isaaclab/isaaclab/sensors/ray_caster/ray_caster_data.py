@@ -3,9 +3,8 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
-from dataclasses import dataclass
-
 import torch
+from dataclasses import dataclass
 
 
 @dataclass

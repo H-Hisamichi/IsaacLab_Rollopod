@@ -36,9 +36,8 @@ simulation_app = SimulationApp(config)
 """Rest everything follows."""
 
 import logging
-import traceback
-
 import torch
+import traceback
 
 import omni
 from isaacsim.core.api.simulation_context import SimulationContext

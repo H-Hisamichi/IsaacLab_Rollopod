@@ -6,15 +6,14 @@
 import glob
 import json
 import math
+import numpy as np
 import os
 import re
+import yaml
 from datetime import datetime
 
-import numpy as np
-import yaml
-from tensorboard.backend.event_processing import event_accumulator
-
 import carb
+from tensorboard.backend.event_processing import event_accumulator
 
 
 def get_env_configs(configs_path):

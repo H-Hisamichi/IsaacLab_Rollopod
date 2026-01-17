@@ -7,11 +7,10 @@ from __future__ import annotations
 
 import copy
 import functools
-from collections.abc import Callable
-from typing import TYPE_CHECKING
-
 import numpy as np
 import trimesh
+from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .hf_terrains_cfg import HfTerrainBaseCfg

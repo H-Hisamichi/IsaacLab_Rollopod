@@ -13,19 +13,16 @@ simulation_app = app_launcher.app
 
 """Rest everything follows."""
 
-import os
-
 import gymnasium as gym
-import pytest
+import os
 import torch
 
 import omni.usd
+import pytest
+from env_test_utils import setup_environment
 
 import isaaclab_tasks  # noqa: F401
 from isaaclab_tasks.utils import parse_env_cfg
-
-# Local imports should be imported last
-from env_test_utils import setup_environment  # isort: skip
 
 
 @pytest.fixture(scope="function")

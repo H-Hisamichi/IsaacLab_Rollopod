@@ -16,6 +16,7 @@ class FrankaBinStackIKRelMimicEnvCfg(FrankaBinStackEnvCfg, MimicEnvCfg):
     """
 
     def __post_init__(self):
+
         # post init of parents
         super().__post_init__()
 

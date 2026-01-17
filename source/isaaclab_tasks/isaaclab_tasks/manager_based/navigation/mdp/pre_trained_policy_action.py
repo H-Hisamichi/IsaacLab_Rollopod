@@ -5,10 +5,9 @@
 
 from __future__ import annotations
 
+import torch
 from dataclasses import MISSING
 from typing import TYPE_CHECKING
-
-import torch
 
 import isaaclab.utils.math as math_utils
 from isaaclab.assets import Articulation

@@ -16,9 +16,9 @@ import os
 
 # Import the function to test
 import tempfile
+import torch
 
 import pytest
-import torch
 
 from isaaclab.controllers.utils import change_revolute_to_fixed, change_revolute_to_fixed_regex
 from isaaclab.utils.assets import ISAACLAB_NUCLEUS_DIR, retrieve_file_path

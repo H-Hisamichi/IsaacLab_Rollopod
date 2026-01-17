@@ -5,9 +5,8 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import torch
+from typing import TYPE_CHECKING
 
 from isaaclab.utils.math import (
     apply_delta_pose,
@@ -510,6 +509,7 @@ class OperationalSpaceController:
 
             # Null space position control
             if self.cfg.nullspace_control == "position":
+
                 # Check if the current joint positions and velocities are provided
                 if current_joint_pos is None or current_joint_vel is None:
                     raise ValueError("Current joint positions and velocities are required for null-space control.")

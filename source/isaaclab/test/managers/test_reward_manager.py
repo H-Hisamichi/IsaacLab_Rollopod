@@ -12,10 +12,10 @@ simulation_app = AppLauncher(headless=True).app
 
 """Rest everything follows."""
 
+import torch
 from collections import namedtuple
 
 import pytest
-import torch
 
 from isaaclab.managers import RewardManager, RewardTermCfg
 from isaaclab.sim import SimulationContext

@@ -5,9 +5,8 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import torch
+from typing import TYPE_CHECKING
 
 from isaaclab.assets.articulation import Articulation
 from isaaclab.managers.action_manager import ActionTerm

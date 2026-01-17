@@ -8,10 +8,9 @@
 from __future__ import annotations
 
 import logging
+import torch
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
-
-import torch
 
 import isaaclab.utils.math as math_utils
 from isaaclab.assets import Articulation
