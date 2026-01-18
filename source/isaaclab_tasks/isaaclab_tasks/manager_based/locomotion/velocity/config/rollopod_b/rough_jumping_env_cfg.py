@@ -100,7 +100,7 @@ class RollopodBRoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.scene.robot = ROLLOPOD_B_JUMPING_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         self.scene.height_scanner.prim_path = "{ENV_REGEX_NS}/Robot/MainBody"
         self.scene.height_scanner.offset = RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.0))
-        self.scene.height_scanner.pattern_cfg = patterns.GridPatternCfg(resolution=0.2, size=[1.0, 1.0])
+        self.scene.height_scanner.pattern_cfg = patterns.GridPatternCfg(resolution=0.2, size=[1.6, 1.6])
 
         self.commands.base_velocity = mdp.JumpingCommandCfg(
             asset_name="robot",
